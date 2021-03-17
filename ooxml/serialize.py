@@ -28,12 +28,13 @@ Hooks:
 
 """
 
-import os.path
-import six
 import collections
 import math
+import os.path
 
+import six
 from lxml import etree
+
 from . import doc
 
 
@@ -56,13 +57,14 @@ def _get_font_size(document, style):
 
     font_size = style.get_font_size()
 
-    if  font_size == -1:
+    if font_size == -1:
         if style.based_on:
             based_on = document.styles.get_by_id(style.based_on)
             if based_on:
                 return _get_font_size(document, based_on)
 
     return font_size
+
 
 def _get_based_on(styles, name):
     for _, values in styles.items():
@@ -142,7 +144,7 @@ def close_list(ctx, root):
 
         while n > 0:
             while True:
-                if elem.tag in ['ul', 'ol', 'td']:                    
+                if elem.tag in ['ul', 'ol', 'td']:
                     elem = elem.getparent()
                     break
 
@@ -207,8 +209,8 @@ def open_list(ctx, document, par, root, elem):
             except:
                 pass
 
-#        if ctx.numid is not None and par.numid > ctx.numid:
-#            if ctx.numid != None:   
+        #        if ctx.numid is not None and par.numid > ctx.numid:
+        #            if ctx.numid != None:
         if par.numid > ctx.numid:
             fmt = _get_numbering(document, par.numid, par.ilvl)
             _ls = etree.SubElement(root, _get_numbering_tag(fmt))
@@ -216,7 +218,7 @@ def open_list(ctx, document, par, root, elem):
 
             ctx.in_list.append((par.numid, par.ilvl))
             root = _ls
-                
+
     ctx.ilvl = par.ilvl
     ctx.numid = par.numid
 
@@ -265,6 +267,7 @@ def serialize_math(ctx, document, elem, root):
 
     return root
 
+
 def serialize_link(ctx, document, elem, root):
     """Serilaze link element.
 
@@ -290,7 +293,7 @@ def serialize_link(ctx, document, elem, root):
                     _text = children[-1].tail or u''
 
                     children[-1].tail = u'{}{}'.format(_text, el.value())
-   
+
     if elem.rid in document.relationships[ctx.options['relationship']]:
         _a.set('href', document.relationships[ctx.options['relationship']][elem.rid].get('target', ''))
 
@@ -339,7 +342,7 @@ def fire_hooks(ctx, document, elem, element, hooks):
         hook(ctx, document, elem, element)
 
 
-def has_style(node):    
+def has_style(node):
     """Tells us if node element has defined styling.
 
     :Args:
@@ -398,9 +401,9 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
             size = int(node.rpr['sz']) / 2
 
             if ctx.options['embed_fontsize']:
-                if ctx.options['scale_to_size']:                
-                    multiplier = size-ctx.options['scale_to_size']
-                    scale = 100 + int(math.trunc(8.3*multiplier))
+                if ctx.options['scale_to_size']:
+                    multiplier = size - ctx.options['scale_to_size']
+                    scale = 100 + int(math.trunc(8.3 * multiplier))
                     style.append('font-size: {}%'.format(scale))
                 else:
                     style.append('font-size: {}pt'.format(size))
@@ -518,7 +521,7 @@ def get_css_classes(document, style):
     'header1 normal'
     """
     lst = [st.lower() for st in get_all_styles(document, style)[-1:]] + \
-        ['{}-fontsize'.format(st.lower()) for st in get_all_styles(document, style)[-1:]]
+          ['{}-fontsize'.format(st.lower()) for st in get_all_styles(document, style)[-1:]]
 
     return ' '.join(lst)
 
@@ -551,7 +554,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
         max_font_size = _get_font_size(document, style)
 
     for el in par.elements:
-        _serializer =  ctx.get_serializer(el)
+        _serializer = ctx.get_serializer(el)
 
         if _serializer:
             _serializer(ctx, document, el, elem)
@@ -574,8 +577,8 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                 new_element.text = el.value()
             elif 'subscript' in el.rpr:
                 new_element = etree.Element('sub')
-                new_element.text = el.value()               
-            elif 'b' in el.rpr or 'i' in el.rpr or 'u' in el.rpr:                
+                new_element.text = el.value()
+            elif 'b' in el.rpr or 'i' in el.rpr or 'u' in el.rpr:
                 new_element = None
                 _element = None
 
@@ -595,7 +598,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                 new_element, _element = _add_formatting('b', new_element, _element)
                 new_element, _element = _add_formatting('i', new_element, _element)
                 new_element, _element = _add_formatting('u', new_element, _element)
-                
+
                 _element.text = el.value()
 
                 for comment_id in ctx.opened_comments:
@@ -628,25 +631,27 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                 _child_style = children[-1].get('style') or ''
                 _child_class = children[-1].get('class', '')
 
-                if new_element.tag == children[-1].tag and ((_text_class == _child_class or _child_class == '') and (_text_style == _child_style or _child_style == '')) and children[-1].tail is None:
+                if new_element.tag == children[-1].tag and ((_text_class == _child_class or _child_class == '') and (
+                        _text_style == _child_style or _child_style == '')) and children[-1].tail is None:
                     txt = children[-1].text or ''
                     txt2 = new_element.text or ''
-                    children[-1].text = u'{}{}'.format(txt, txt2)  
+                    children[-1].text = u'{}{}'.format(txt, txt2)
                     was_inserted = True
 
                 if not was_inserted:
-                    if _style == _text_style  and new_element.tag == 'span' and (_text_class == _child_class or _child_class == ''):
+                    if _style == _text_style and new_element.tag == 'span' and (
+                            _text_class == _child_class or _child_class == ''):
                         _e = children[-1]
 
                         txt = _e.tail or ''
                         _e.tail = u'{}{}'.format(txt, new_element.text)
                         was_inserted = True
-  
+
                     if not was_inserted and new_element.tag == 'span' and (_text_class != _child_class):
                         _e = children[-1]
                         txt = _e.tail or ''
                         _e.tail = u'{}{}'.format(txt, new_element.text)
-                        was_inserted = True       
+                        was_inserted = True
 
             if not was_inserted:
                 _child_class = new_element.get('class', '')
@@ -655,18 +660,18 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                 except:
                     _child_class = ''
 
-                if _style ==  _text_style  and new_element.tag == 'span' and (_text_class == _child_class):
+                if _style == _text_style and new_element.tag == 'span' and (_text_class == _child_class):
                     txt = elem.text or ''
                     elem.text = u'{}{}'.format(txt, new_element.text)
                 else:
                     if new_element.text != u'':
                         elem.append(new_element)
-    
+
     if not par.is_dropcap() and par.ilvl == None:
         if style:
             if ctx.header.is_header(par, max_font_size, elem, style=style):
                 elem.tag = ctx.header.get_header(par, style, elem)
-                if par.ilvl == None:        
+                if par.ilvl == None:
                     root = close_list(ctx, root)
                     ctx.ilvl, ctx.numid = None, None
 
@@ -676,19 +681,18 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                 fire_hooks(ctx, document, par, elem, ctx.get_hook('h'))
                 return root
         else:
-#            Commented part where we only checked for heading if font size
-#            was bigger than default font size. In many cases this did not
-#            work out well.
-#            if max_font_size > ctx.header.default_font_size:
+            #            Commented part where we only checked for heading if font size
+            #            was bigger than default font size. In many cases this did not
+            #            work out well.
+            #            if max_font_size > ctx.header.default_font_size:
             if True:
                 if ctx.header.is_header(par, max_font_size, elem, style=style):
                     if elem.text != '' and len(list(elem)) != 0:
                         elem.tag = ctx.header.get_header(par, max_font_size, elem)
 
-                        if par.ilvl == None:        
+                        if par.ilvl == None:
                             root = close_list(ctx, root)
                             ctx.ilvl, ctx.numid = None, None
-
 
                         if root is not None:
                             root.append(elem)
@@ -701,7 +705,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
             elem.append(etree.Entity('nbsp'))
 
     # Indentation is different. We are starting or closing list.
-    if par.ilvl != None:        
+    if par.ilvl != None:
         root = open_list(ctx, document, par, root, elem)
         return root
     else:
@@ -763,8 +767,8 @@ def serialize_comment(ctx, document, el, root):
         if ctx.options['comment_span']:
             link = etree.SubElement(root, 'a')
             link.set('href', '#')
-            link.set('class', 'comment-link')    
-            link.set('id', 'comment-id-' + el.cid)    
+            link.set('class', 'comment-link')
+            link.set('id', 'comment-id-' + el.cid)
 
             link.text = ''
 
@@ -866,7 +870,7 @@ def serialize_table(ctx, document, table, root):
                     _td = _ser(ctx, document, elem, _td, embed=False)
 
             if ctx.ilvl != None:
-#                root = close_list(ctx, root)
+                #                root = close_list(ctx, root)
                 _td = close_list(ctx, _td)
 
                 ctx.ilvl, ctx.numid = None, None
@@ -876,7 +880,7 @@ def serialize_table(ctx, document, table, root):
 
     fire_hooks(ctx, document, table, _table, ctx.get_hook('table'))
 
-    return root    
+    return root
 
 
 def serialize_textbox(ctx, document, txtbox, root):
@@ -921,16 +925,17 @@ class HeaderContext:
                 if sz > self.default_font_size:
                     yield (sz, value)
 
-            return 
+            return
 
         most_common_fonts = doc.used_font_size.most_common()
         most_common = -1
         if len(most_common_fonts) > 0:
-            if most_common_fonts[0][1] > 4: # this is huge gable, we should calculate it better
+            if most_common_fonts[0][1] > 4:  # this is huge gable, we should calculate it better
                 most_common = most_common_fonts[0][0]
 
-        _list_of_fonts = [fnt for fnt in doc.used_font_size.items() if fnt[0] != most_common] 
-        self.header_sizes = [[el] for el in reversed(collections.OrderedDict(sorted(_filter_font_sizes(_list_of_fonts), key=lambda t: t[0])))]
+        _list_of_fonts = [fnt for fnt in doc.used_font_size.items() if fnt[0] != most_common]
+        self.header_sizes = [[el] for el in reversed(
+            collections.OrderedDict(sorted(_filter_font_sizes(_list_of_fonts), key=lambda t: t[0])))]
 
         for style_id in doc.used_styles:
             style = doc.styles.get_by_id(style_id)
@@ -944,13 +949,12 @@ class HeaderContext:
                 for i in range(len(self.header_sizes)):
                     if self.header_sizes[i][0] < font_size:
                         if i == 0:
-                            self.header_sizes = [[font_size]]+self.header_sizes
+                            self.header_sizes = [[font_size]] + self.header_sizes
                         else:
-                            self.header_sizes[i-1].append(style_id)
+                            self.header_sizes[i - 1].append(style_id)
                             break
                     elif self.header_sizes[i][0] == font_size:
                         self.header_sizes[i].append(style_id)
-
 
     def is_header(self, elem, font_size, node, style=None):
         """Used for checking if specific element is a header or not.
@@ -958,7 +962,7 @@ class HeaderContext:
         :Returns:
           True or False
         """
-        
+
         # This logic has been disabled for now. Mark this as header if it has
         # been marked during the parsing or mark.
         # if hasattr(elem, 'possible_header'):
@@ -973,11 +977,11 @@ class HeaderContext:
 
             from .importer import calculate_weight
             weight = calculate_weight(self.doc, elem)
-            
+
             if weight > 50:
                 return False
 
-            if fnt_size in self.doc.possible_headers_style:                
+            if fnt_size in self.doc.possible_headers_style:
                 return True
 
             return font_size in self.doc.possible_headers
@@ -992,7 +996,8 @@ class HeaderContext:
                 except:
                     pass
 
-            sorted_list_of_sizes = list(collections.OrderedDict(sorted(six.iteritems(list_of_sizes), key=lambda t: t[0])))
+            sorted_list_of_sizes = list(
+                collections.OrderedDict(sorted(six.iteritems(list_of_sizes), key=lambda t: t[0])))
             font_size_to_check = font_size
 
             if len(sorted_list_of_sizes) > 0:
@@ -1000,7 +1005,6 @@ class HeaderContext:
                     return sorted_list_of_sizes[0] in self.doc.possible_headers
 
             return font_size in self.doc.possible_headers
-
 
     def get_header(self, elem, style, node):
         """Returns HTML tag representing specific header for this element.
@@ -1022,9 +1026,9 @@ class HeaderContext:
 
         try:
             if font_size in self.doc.possible_headers_style:
-                return 'h{}'.format(self.doc.possible_headers_style.index(font_size)+1)
+                return 'h{}'.format(self.doc.possible_headers_style.index(font_size) + 1)
 
-            return 'h{}'.format(self.doc.possible_headers.index(font_size)+1)
+            return 'h{}'.format(self.doc.possible_headers.index(font_size) + 1)
         except ValueError:
             return 'h6'
 
@@ -1132,6 +1136,7 @@ class Context:
         self.in_list = []
         self.header = self.options['header']()
 
+
 # Serialize style into CSS
 
 ###############################################################################
@@ -1173,16 +1178,16 @@ def serialize_styles(document, prefix='', options=None):
 
     ctx = Context(document, options=options)
 
-    for style_type, style_id in six.iteritems(document.styles.default_styles):        
+    for style_type, style_id in six.iteritems(document.styles.default_styles):
         if style_type == 'table':
             n = ["table"]
             css_content += _generate(ctx, style_id, n)
         elif style_type == 'paragraph':
-            n = ["p", "div"] #  n = ["p", "div", "span"]
-            css_content += _generate(ctx, style_id, n)            
+            n = ["p", "div"]  # n = ["p", "div", "span"]
+            css_content += _generate(ctx, style_id, n)
         elif style_type == 'character':
             n = ["span"]
-            css_content += _generate(ctx, style_id, n)            
+            css_content += _generate(ctx, style_id, n)
         elif style_type == 'numbering':
             n = ["ul", "li"]
             css_content += _generate(ctx, style_id, n)
@@ -1210,6 +1215,7 @@ def serialize_styles(document, prefix='', options=None):
 
     return css_content
 
+
 # Serialize list of elements into HTML
 
 def serialize_elements(document, elements, options=None):
@@ -1222,7 +1228,7 @@ def serialize_elements(document, elements, options=None):
 
     :Returns:
       Returns HTML representation of the document.
-    """    
+    """
     ctx = Context(document, options)
 
     tree_root = root = etree.Element('div')
@@ -1236,7 +1242,8 @@ def serialize_elements(document, elements, options=None):
     # TODO:
     # - create footnotes now
 
-    return etree.tostring(tree_root, pretty_print=ctx.options.get('pretty_print', True), encoding="utf-8", xml_declaration=False)
+    return etree.tostring(tree_root, pretty_print=ctx.options.get('pretty_print', True), encoding="utf-8",
+                          xml_declaration=False)
 
 
 def serialize(document, options=None):

@@ -12,7 +12,6 @@ from lxml import etree
 
 from . import doc, NAMESPACES
 
-
 logger = logging.getLogger('ooxml')
 
 
@@ -59,7 +58,8 @@ def parse_previous_properties(document, paragraph, prop):
 
         if isinstance(paragraph, doc.Text):
             if not ('dropcap' in paragraph.ppr and paragraph.ppr['dropcap']):
-                if paragraph.parent and hasattr(paragraph.parent, 'ppr') and (not ('dropcap' in paragraph.parent.ppr and paragraph.parent.ppr['dropcap'])):
+                if paragraph.parent and hasattr(paragraph.parent, 'ppr') and (
+                not ('dropcap' in paragraph.parent.ppr and paragraph.parent.ppr['dropcap'])):
                     document.add_font_as_used(paragraph.rpr['sz'])
         elif isinstance(paragraph, doc.Paragraph):
             if not ('dropcap' in paragraph.ppr and paragraph.ppr['dropcap']):

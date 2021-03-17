@@ -6,8 +6,9 @@
 
 """
 
-import six
 import collections
+
+import six
 
 
 class Style(object):
@@ -39,7 +40,7 @@ class Style(object):
           Returns font size as integer. Returns -1 if font size is not defined for this style.
         """
         if 'sz' in self.rpr:
-            return int(self.rpr['sz'])/2
+            return int(self.rpr['sz']) / 2
 
         return -1
 
@@ -52,7 +53,7 @@ class StylesCollection:
     def __init__(self):
         self.reset()
 
-    def get_by_name(self, name, style_type = None):
+    def get_by_name(self, name, style_type=None):
         """Find style by it's descriptive name.
 
         :Returns:
@@ -64,10 +65,10 @@ class StylesCollection:
                     return st
 
         if style_type and not st:
-            st = self.styles.get(self.default_styles[style_type], None)            
+            st = self.styles.get(self.default_styles[style_type], None)
         return st
 
-    def get_by_id(self, style_id, style_type = None):
+    def get_by_id(self, style_id, style_type=None):
         """Find style by it's unique identifier
 
         :Returns:
@@ -82,7 +83,7 @@ class StylesCollection:
         if style_type:
             return self.styles.get(self.default_styles[style_type], None)
         return None
-    
+
     def reset(self):
         self.styles = {}
         self.default_styles = {}
@@ -106,7 +107,7 @@ class Document(object):
 
     def get_styles(self, name):
         styles = []
-        while True:                     
+        while True:
             style = self.styles.get_by_id(name)
 
             styles.append(style)
@@ -135,7 +136,7 @@ class Document(object):
         _text_list = collections.Counter()
 
         for font_size, amount in six.iteritems(self.usage_font_size):
-            if float(amount) / max_count <= 0.1:                
+            if float(amount) / max_count <= 0.1:
                 if font_size not in _headers:
                     _headers.append(font_size)
             else:
@@ -151,7 +152,7 @@ class Document(object):
             for value in self.possible_headers[:]:
                 if self.possible_text[0] >= value:
                     self.possible_headers.remove(value)
-#                    self.possible_headers_style.remove(value)
+        #                    self.possible_headers_style.remove(value)
 
         _mc = _text_list.most_common(1)
 
@@ -196,18 +197,18 @@ class Element(object):
     def value(self):
         return None
 
- 
+
 class Paragraph(Element):
     """Represents basic paragraph element in OOXML document.
 
     Paragraph can also hold other elements. Besides that, list items and dropcaps are also defined by
     this element.
     """
+
     def __init__(self):
         super(Paragraph, self).__init__()
 
         self.reset()
-
 
     def reset(self):
         self.elements = []
@@ -236,7 +237,6 @@ class Text(Element):
         self.ppr = {}
         self.parent = None
 
-
     def value(self):
         return self.text
 
@@ -252,9 +252,10 @@ class Link(Element):
         self.rpr = {}
         self.ppr = {}
 
-
     def value(self):
         return self.elements
+
+
 #        return ''.join(elem.value() for elem in self.elements)
 
 
@@ -278,9 +279,8 @@ class TableCell(Element):
 
         self.grid_span = 1
         self.row_span = 1
-        self.vmerge = None        
+        self.vmerge = None
         self.elements = []
-
 
     def value(self):
         return self.elements
@@ -355,7 +355,7 @@ class Symbol(Element):
 
     SYMBOLS = {
         'F020': u'\u0020',
-        'F021': u'\u270F',        
+        'F021': u'\u270F',
         'F022': u'\u2702',
         'F023': u'\u2701',
         'F024': u'\u1F453',
@@ -454,7 +454,7 @@ class Symbol(Element):
 class TOC(Element):
     """Represents Table Of Contents element.
 
-    We don't do much with this element at the moment."""    
+    We don't do much with this element at the moment."""
     pass
 
 
