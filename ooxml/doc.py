@@ -26,8 +26,8 @@ class Style(object):
         self.name = ''
         self.based_on = ''
 
-        self.rpr = {}
-        self.ppr = {}
+        self.run_properties = {}
+        self.paragraph_properties = {}
 
     def get_font_size(self):
         """Returns font size for this style. 
@@ -37,8 +37,8 @@ class Style(object):
         :Returns:
           Returns font size as integer. Returns -1 if font size is not defined for this style.
         """
-        if 'sz' in self.rpr:
-            return int(self.rpr['sz']) / 2
+        if 'sz' in self.run_properties:
+            return int(self.run_properties['sz']) / 2
 
         return -1
 
@@ -57,14 +57,14 @@ class StylesCollection:
         :Returns:
           Returns found style of type :class:`ooxml.doc.Style`.
         """
-        for st in self.styles.values():
-            if st:
-                if st.name == name:
-                    return st
+        for style in self.styles.values():
+            if style:
+                if style.name == name:
+                    return style
 
-        if style_type and not st:
-            st = self.styles.get(self.default_styles[style_type], None)
-        return st
+            if style_type and not style:
+                style = self.styles.get(self.default_styles[style_type], None)
+            return style
 
     def get_by_id(self, style_id, style_type=None):
         """Find style by it's unique identifier
@@ -73,10 +73,10 @@ class StylesCollection:
           Returns found style of type :class:`ooxml.doc.Style`.
         """
 
-        for st in self.styles.values():
-            if st:
-                if st.style_id == style_id:
-                    return st
+        for style in self.styles.values():
+            if style:
+                if style.style_id == style_id:
+                    return style
 
         if style_type:
             return self.styles.get(self.default_styles[style_type], None)
@@ -88,7 +88,7 @@ class StylesCollection:
 
 
 class Document(object):
-    "Represents OOXML document."
+    """Represents OOXML document."""
 
     def __init__(self):
         super(Document, self).__init__()
@@ -99,9 +99,9 @@ class Document(object):
         if name not in self.used_styles:
             self.used_styles.append(name)
 
-    def add_font_as_used(self, sz):
-        fsz = int(sz) / 2
-        self.used_font_size[fsz] += 1
+    def add_font_as_used(self, size):
+        font_size = int(size) / 2
+        self.used_font_size[font_size] += 1
 
     def get_styles(self, name):
         styles = []
@@ -187,7 +187,7 @@ class CommentContent:
 
 
 class Element(object):
-    "Basic element paresed in the OOXML document."
+    """Basic element paresed in the OOXML document."""
 
     def reset(self):
         pass
@@ -215,24 +215,24 @@ class Paragraph(Element):
         self.numid = None
         self.ilvl = None
 
-        self.rpr = {}
-        self.ppr = {}
+        self.run_properties = {}
+        self.paragraph_properties = {}
 
         self.possible_header = False
 
     def is_dropcap(self):
-        return 'dropcap' in self.ppr and self.ppr['dropcap']
+        return 'dropcap' in self.paragraph_properties and self.paragraph_properties['dropcap']
 
 
 class Text(Element):
-    "Represents Text element which can be found inside of other Paragraph elements."
+    """Represents Text element which can be found inside of other Paragraph elements."""
 
     def __init__(self, text='', parent=None):
         super(Text, self).__init__()
 
         self.text = text
-        self.rpr = {}
-        self.ppr = {}
+        self.run_properties = {}
+        self.paragraph_properties = {}
         self.parent = None
 
     def value(self):
@@ -240,25 +240,23 @@ class Text(Element):
 
 
 class Link(Element):
-    "Represents link element holding reference to internal or external link."
+    """Represents link element holding reference to internal or external link."""
 
     def __init__(self, rid):
         super(Link, self).__init__()
 
         self.elements = []
         self.rid = rid
-        self.rpr = {}
-        self.ppr = {}
+        self.run_properties = {}
+        self.paragraph_properties = {}
 
     def value(self):
         return self.elements
-
-
-#        return ''.join(elem.value() for elem in self.elements)
+        # return ''.join(elem.value() for elem in self.elements)
 
 
 class Image(Element):
-    "Represent image element."
+    """Represent image element."""
 
     def __init__(self, rid):
         super(Image, self).__init__()
@@ -270,7 +268,7 @@ class Image(Element):
 
 
 class TableCell(Element):
-    "Represent one cell in a table."
+    """Represent one cell in a table."""
 
     def __init__(self):
         super(TableCell, self).__init__()
@@ -285,7 +283,7 @@ class TableCell(Element):
 
 
 class Table(Element):
-    "Represents table element."
+    """Represents table element."""
 
     def __init__(self):
         super(Table, self).__init__()
@@ -297,7 +295,7 @@ class Table(Element):
 
 
 class Comment(Element):
-    "Represents comment element."
+    """Represents comment element."""
 
     def __init__(self, cid, comment_type):
         super(Comment, self).__init__()
@@ -310,7 +308,7 @@ class Comment(Element):
 
 
 class Footnote(Element):
-    "Represents footnote element."
+    """Represents footnote element."""
 
     def __init__(self, rid):
         super(Footnote, self).__init__()
@@ -322,7 +320,7 @@ class Footnote(Element):
 
 
 class Endnote(Element):
-    "Represents endnote element."
+    """Represents endnote element."""
 
     def __init__(self, rid):
         super(Endnote, self).__init__()
@@ -334,7 +332,7 @@ class Endnote(Element):
 
 
 class TextBox(Element):
-    "Represents TextBox element."
+    """Represents TextBox element."""
 
     def __init__(self, elements):
         super(TextBox, self).__init__()
@@ -482,7 +480,7 @@ class Math(Element):
 
 
 class SmartTag(Element):
-    "Represents SmartTag element."
+    """Represents SmartTag element."""
 
     def __init__(self):
         self.elements = []

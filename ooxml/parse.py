@@ -20,7 +20,7 @@ def _name(name):
 
     It checks predefined namespaces used in OOXML documents.
 
-    >>> _name('{{{w}}}rStyle')
+    > _name('{{{w}}}rStyle')
     '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}rStyle'
     """
     return name.format(**NAMESPACES)
@@ -30,102 +30,99 @@ def is_on(value):
     return value in ['true', 'on', '1']
 
 
-def parse_previous_properties(document, paragraph, prop):
+def parse_previous_properties(document, paragraph, property):
     if not paragraph:
         return
 
-    style = prop.find(_name('{{{w}}}rStyle'))
+    style = property.find(_name('{{{w}}}rStyle'))
 
     if style is not None:
-        paragraph.rpr['style'] = style.attrib[_name('{{{w}}}val')]
-        document.add_style_as_used(paragraph.rpr['style'])
+        paragraph.run_properties['style'] = style.attrib[_name('{{{w}}}val')]
+        document.add_style_as_used(paragraph.run_properties['style'])
 
-    color = prop.find(_name('{{{w}}}color'))
+    text_color = property.find(_name('{{{w}}}color'))
 
-    if color is not None:
-        paragraph.rpr['color'] = color.attrib[_name('{{{w}}}val')]
+    if text_color is not None:
+        paragraph.run_properties['color'] = text_color.attrib[_name('{{{w}}}val')]
 
-    rtl = prop.find(_name('{{{w}}}rtl'))
+    right_to_left = property.find(_name('{{{w}}}rtl'))
 
-    if rtl is not None:
-        if is_on(rtl.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.rpr['rtl'] = True
+    if right_to_left is not None:
+        if is_on(right_to_left.attrib.get(_name('{{{w}}}val'), 'on')):
+            paragraph.run_properties['rtl'] = True
 
-    sz = prop.find(_name('{{{w}}}sz'))
+    text_size = property.find(_name('{{{w}}}sz'))
 
-    if sz is not None:
-        paragraph.rpr['sz'] = sz.attrib[_name('{{{w}}}val')]
+    if text_size is not None:
+        paragraph.run_properties['sz'] = text_size.attrib[_name('{{{w}}}val')]
 
         if isinstance(paragraph, doc.Text):
-            if not ('dropcap' in paragraph.ppr and paragraph.ppr['dropcap']):
+            if not ('dropcap' in paragraph.paragraph_properties and paragraph.paragraph_properties['dropcap']):
                 if paragraph.parent and hasattr(paragraph.parent, 'ppr') and (
-                not ('dropcap' in paragraph.parent.ppr and paragraph.parent.ppr['dropcap'])):
-                    document.add_font_as_used(paragraph.rpr['sz'])
+                        not ('dropcap' in paragraph.parent.paragraph_properties and
+                             paragraph.parent.paragraph_properties['dropcap'])):
+                    document.add_font_as_used(paragraph.run_properties['sz'])
         elif isinstance(paragraph, doc.Paragraph):
-            if not ('dropcap' in paragraph.ppr and paragraph.ppr['dropcap']):
-                document.add_font_as_used(paragraph.rpr['sz'])
+            if not ('dropcap' in paragraph.paragraph_properties and paragraph.paragraph_properties['dropcap']):
+                document.add_font_as_used(paragraph.run_properties['sz'])
         else:
-            document.add_font_as_used(paragraph.rpr['sz'])
+            document.add_font_as_used(paragraph.run_properties['sz'])
 
-    # parse bold
-    b = prop.find(_name('{{{w}}}b'))
+    bold = property.find(_name('{{{w}}}b'))
 
-    if b is not None:
-        if is_on(b.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.rpr['b'] = True
+    if bold is not None:
+        if is_on(bold.attrib.get(_name('{{{w}}}val'), 'on')):
+            paragraph.run_properties['b'] = True
 
-    # parse italic
-    i = prop.find(_name('{{{w}}}i'))
+    italic = property.find(_name('{{{w}}}i'))
 
-    if i is not None:
-        if is_on(i.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.rpr['i'] = True
+    if italic is not None:
+        if is_on(italic.attrib.get(_name('{{{w}}}val'), 'on')):
+            paragraph.run_properties['i'] = True
 
-    # parse underline
-    u = prop.find(_name('{{{w}}}u'))
+    underline = property.find(_name('{{{w}}}u'))
 
-    if u is not None:
-        if is_on(u.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.rpr['u'] = True
+    if underline is not None:
+        if is_on(underline.attrib.get(_name('{{{w}}}val'), 'on')):
+            paragraph.run_properties['u'] = True
 
-    # parse underline
-    strike = prop.find(_name('{{{w}}}strike'))
+    strikethrough = property.find(_name('{{{w}}}strike'))
 
-    if strike is not None:
+    if strikethrough is not None:
         # todo
         # check b = on and not off
-        if is_on(strike.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.rpr['strike'] = True
+        if is_on(strikethrough.attrib.get(_name('{{{w}}}val'), 'on')):
+            paragraph.run_properties['strike'] = True
 
-    vert_align = prop.find(_name('{{{w}}}vertAlign'))
+    vertical_align = property.find(_name('{{{w}}}vertAlign'))
 
-    if vert_align is not None:
-        value = vert_align.attrib[_name('{{{w}}}val')]
+    if vertical_align is not None:
+        value = vertical_align.attrib[_name('{{{w}}}val')]
 
         if value == 'superscript':
-            paragraph.rpr['superscript'] = True
+            paragraph.run_properties['superscript'] = True
 
         if value == 'subscript':
-            paragraph.rpr['subscript'] = True
+            paragraph.run_properties['subscript'] = True
 
-    small_caps = prop.find(_name('{{{w}}}smallCaps'))
+    small_caps = property.find(_name('{{{w}}}smallCaps'))
 
     if small_caps is not None:
         if is_on(small_caps.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.rpr['small_caps'] = True
+            paragraph.run_properties['small_caps'] = True
 
 
-def parse_paragraph_properties(doc, paragraph, prop):
+def parse_paragraph_properties(document, paragraph, property):
     if not paragraph:
         return
 
-    style = prop.find(_name('{{{w}}}pStyle'))
+    style = property.find(_name('{{{w}}}pStyle'))
 
     if style is not None:
         paragraph.style_id = style.attrib[_name('{{{w}}}val')]
-        doc.add_style_as_used(paragraph.style_id)
+        document.add_style_as_used(paragraph.style_id)
 
-    numpr = prop.find(_name('{{{w}}}numPr'))
+    numpr = property.find(_name('{{{w}}}numPr'))
 
     if numpr is not None:
         ilvl = numpr.find(_name('{{{w}}}ilvl'))
@@ -138,40 +135,38 @@ def parse_paragraph_properties(doc, paragraph, prop):
         if numid is not None:
             paragraph.numid = int(numid.attrib[_name('{{{w}}}val')])
 
-    jc = prop.find(_name('{{{w}}}jc'))
+    alignment = property.find(_name('{{{w}}}jc'))
 
-    if jc is not None:
-        paragraph.ppr['jc'] = jc.attrib[_name('{{{w}}}val')]
+    if alignment is not None:
+        paragraph.paragraph_properties['jc'] = alignment.attrib[_name('{{{w}}}val')]
 
-    # w:ind - left leftChars right hanging firstLine
+    indentation = property.find(_name('{{{w}}}ind'))
 
-    ind = prop.find(_name('{{{w}}}ind'))
+    if indentation is not None:
+        paragraph.paragraph_properties['ind'] = {}
 
-    if ind is not None:
-        paragraph.ppr['ind'] = {}
+        if _name('{{{w}}}left') in indentation.attrib:
+            paragraph.paragraph_properties['ind']['left'] = indentation.attrib[_name('{{{w}}}left')]
 
-        if _name('{{{w}}}left') in ind.attrib:
-            paragraph.ppr['ind']['left'] = ind.attrib[_name('{{{w}}}left')]
+        if _name('{{{w}}}right') in indentation.attrib:
+            paragraph.paragraph_properties['ind']['right'] = indentation.attrib[_name('{{{w}}}right')]
 
-        if _name('{{{w}}}right') in ind.attrib:
-            paragraph.ppr['ind']['right'] = ind.attrib[_name('{{{w}}}right')]
+        if _name('{{{w}}}firstLine') in indentation.attrib:
+            paragraph.paragraph_properties['ind']['first_line'] = indentation.attrib[_name('{{{w}}}firstLine')]
 
-        if _name('{{{w}}}firstLine') in ind.attrib:
-            paragraph.ppr['ind']['first_line'] = ind.attrib[_name('{{{w}}}firstLine')]
-
-    frame_pr = prop.find(_name('{{{w}}}framePr'))
+    frame_pr = property.find(_name('{{{w}}}framePr'))
 
     if frame_pr is not None:
         if _name('{{{w}}}dropCap') in frame_pr.attrib:
             drop_cap = frame_pr.attrib[_name('{{{w}}}dropCap')]
 
             if drop_cap.lower() in ['drop', 'margin']:
-                paragraph.ppr['dropcap'] = True
+                paragraph.paragraph_properties['dropcap'] = True
 
-    rpr = prop.find(_name('{{{w}}}rPr'))
+    run_properties = property.find(_name('{{{w}}}rPr'))
 
-    if rpr is not None:
-        parse_previous_properties(doc, paragraph, rpr)
+    if run_properties is not None:
+        parse_previous_properties(document, paragraph, run_properties)
 
 
 def parse_drawing(document, container, elem):
@@ -191,7 +186,7 @@ def parse_drawing(document, container, elem):
 
 
 def parse_footnote(document, container, elem):
-    "Parse the footnote element."
+    """Parse the footnote element."""
 
     _rid = elem.attrib[_name('{{{w}}}id')]
     foot = doc.Footnote(_rid)
@@ -199,7 +194,7 @@ def parse_footnote(document, container, elem):
 
 
 def parse_endnote(document, container, elem):
-    "Parse the endnote element."
+    """Parse the endnote element."""
 
     _rid = elem.attrib[_name('{{{w}}}id')]
     note = doc.Endnote(_rid)
@@ -222,7 +217,7 @@ def parse_alternate(document, container, elem):
 
 
 def parse_text(document, container, element):
-    "Parse text element."
+    """Parse text element."""
 
     txt = None
 
@@ -292,7 +287,7 @@ def parse_text(document, container, element):
 
 
 def parse_smarttag(document, container, tag_elem):
-    "Parse the endnote element."
+    """Parse the endnote element."""
 
     tag = doc.SmartTag()
 
@@ -359,7 +354,7 @@ def parse_paragraph(document, par):
 
 
 def parse_table_properties(doc, table, prop):
-    "Parse table properties."
+    """Parse table properties."""
 
     if not table:
         return
@@ -372,7 +367,7 @@ def parse_table_properties(doc, table, prop):
 
 
 def parse_table_column_properties(doc, cell, prop):
-    "Parse table column properties."
+    """Parse table column properties."""
 
     if not cell:
         return
@@ -392,7 +387,7 @@ def parse_table_column_properties(doc, cell, prop):
 
 
 def parse_table(document, tbl):
-    "Parse table element."
+    """Parse table element."""
 
     def _change(rows, pos_x):
         if len(rows) == 1:

@@ -3,7 +3,6 @@
 VERSION = '0.13'
 
 NAMESPACES = {
-    'mo': 'http://schemas.microsoft.com/office/mac/office/2008/main',
     'o': 'urn:schemas-microsoft-com:office:office',
     've': 'http://schemas.openxmlformats.org/markup-compatibility/2006',
     # Text Content
@@ -30,7 +29,7 @@ NAMESPACES = {
     # Content Types
     'ct': 'http://schemas.openxmlformats.org/package/2006/content-types',
     # Package Relationships
-    'r': ('http://schemas.openxmlformats.org/officeDocument/2006/relationships'),
+    'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
     'pr': 'http://schemas.openxmlformats.org/package/2006/relationships',
     # Dublin Core document properties
     'dcmitype': 'http://purl.org/dc/dcmitype/',

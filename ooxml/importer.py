@@ -16,16 +16,16 @@ logger = logging.getLogger('ooxml')
 POSSIBLE_HEADER_SIZE = 24
 
 
-def text_length(elem):
+def text_length(element):
     """Returns length of the content in this element.
 
     Return value is not correct but it is **good enough***.
     """
 
-    if not elem:
+    if not element:
         return 0
 
-    value = elem.value()
+    value = element.value()
 
     try:
         value = len(value)
@@ -33,8 +33,8 @@ def text_length(elem):
         value = 0
 
     try:
-        for a in elem.elements:
-            value += len(a.value())
+        for e in element.elements:
+            value += len(e.value())
     except:
         pass
 
@@ -61,15 +61,15 @@ def _calculate(doc, elem, style_id):
         if type(value) in [type(u' '), type(' ')]:
             weight += len(value.strip())
 
-            if hasattr(elem, 'rpr') and 'sz' in elem.rpr:
-                font_size = int(elem.rpr['sz']) / 2
+            if hasattr(elem, 'rpr') and 'sz' in elem.run_properties:
+                font_size = int(elem.run_properties['sz']) / 2
                 doc.usage_font_size[font_size] += weight
             elif style_id is not None:
                 font_size = -1
                 # should check all styles
                 for style in doc.get_styles(style_id):
-                    if 'sz' in style.rpr:
-                        font_size = int(style.rpr['sz']) / 2
+                    if 'sz' in style.run_properties:
+                        font_size = int(style.run_properties['sz']) / 2
                         break
 
                 if font_size != -1:
@@ -79,16 +79,16 @@ def _calculate(doc, elem, style_id):
                 font_size = -1
 
                 for style in doc.get_styles(st.style_id):
-                    if 'sz' in style.rpr:
-                        font_size = int(style.rpr['sz']) / 2
+                    if 'sz' in style.run_properties:
+                        font_size = int(style.run_properties['sz']) / 2
                         break
 
                 if font_size != -1:
                     doc.usage_font_size[font_size] += weight
                 else:
                     if doc.default_style:
-                        if 'sz' in doc.default_style.rpr:
-                            font_size = int(doc.default_style.rpr['sz']) / 2
+                        if 'sz' in doc.default_style.run_properties:
+                            font_size = int(doc.default_style.run_properties['sz']) / 2
                             doc.usage_font_size[font_size] += weight
 
         if isinstance(elem, Table):
@@ -126,7 +126,7 @@ DEFAULT_OPTIONS = {
     'minimum_possible_headers': 5,
     'not_using_styles': True,
     'header_as_text': True,  # font size used to mark header
-    'header_as_text_in_elements': True,  # dont size used to mark header in elements
+    'header_as_text_in_elements': True,  # do not size used to mark header in elements
     'header_as_text_length': 30,
     'header_as_text_length_minimum': 5,
     'header_as_bold_centered': False,
@@ -152,8 +152,6 @@ class ImporterContext:
 
 
 def find_important(ctx, doc, headers):
-    default_font_size = 0
-
     def _big_enough(block):
         # This is something which should be increased
         return block['weight'] > ctx.options['big_enough_for_block']
@@ -181,7 +179,7 @@ def find_important(ctx, doc, headers):
     def _find_toc():
         for idx, header in enumerate(headers):
             if 'is_toc' in header:
-                return (idx, header)
+                return idx, header
 
         return None
 
@@ -223,8 +221,7 @@ def find_important(ctx, doc, headers):
     # COMMENT 1
     if ctx.options['squash_small_blocks']:
         while n < len(headers) - 1:
-            if headers[n]['weight'] < ctx.options['maximum_eat_marker'] and headers[0]['font_size'] == headers[n + 1][
-                'font_size']:
+            if headers[n]['weight'] < ctx.options['maximum_eat_marker'] and headers[0]['font_size'] == headers[n + 1]['font_size']:
                 headers[n + 1]['weight'] += headers[n]['weight']
                 headers[n + 1]['index'] = headers[n]['index']
                 del headers[n]
@@ -275,9 +272,8 @@ def mark_headers(ctx, doc, markers):
             if style['name'] == 'ContentsHeading':
                 selected[-1]['is_toc'] = True
         else:
-            # if style.get('page_break', False) == True:
-            #     selected.append({'name': '', 'page_break': True, 'index': style['index'], 'weight': 0, 'font_size': 0})
-            # else:
+            # if style.get('page_break', False) == True: selected.append({'name': '', 'page_break': True,
+            # 'index': style['index'], 'weight': 0, 'font_size': 0}) else:
             if len(selected) > 0:
                 selected[-1]['weight'] += style['weight']
 
@@ -286,14 +282,13 @@ def mark_headers(ctx, doc, markers):
 
 def mark_styles(ctx, doc, elements):
     """
-    Checks all elements and creates a list of diferent markers for styles or different elements.
+    Checks all elements and creates a list of different markers for styles or different elements.
     """
 
     not_using_styles = False
 
     if ctx.options['not_using_styles']:
-        if len(doc.used_styles) < ctx.options['minimum_used_styles'] and len(doc.possible_headers) < ctx.options[
-            'minimum_possible_headers']:
+        if len(doc.used_styles) < ctx.options['minimum_used_styles'] and len(doc.possible_headers) < ctx.options['minimum_possible_headers']:
             not_using_styles = True
             doc.possible_headers = [POSSIBLE_HEADER_SIZE] + doc.possible_headers
 
@@ -337,20 +332,21 @@ def mark_styles(ctx, doc, elements):
             has_found = True
         else:
             if ctx.options['header_as_text']:
-                if hasattr(elem, 'rpr') and 'sz' in elem.rpr:
+                if hasattr(elem, 'rpr') and 'sz' in elem.run_properties:
 
                     t_length = text_length(elem)
 
-                    if t_length < ctx.options['header_as_text_length'] and t_length >= ctx.options[
-                        'header_as_text_length_minimum']:
+                    if ctx.options['header_as_text_length'] > t_length >= ctx.options['header_as_text_length_minimum']:
                         markers.append(
-                            {'name': '', 'weight': weight, 'index': pos, 'font_size': int(elem.rpr['sz']) / 2})
-                        font_size = int(elem.rpr['sz']) / 2
+                            {'name': '', 'weight': weight, 'index': pos,
+                             'font_size': int(elem.run_properties['sz']) / 2})
+                        font_size = int(elem.run_properties['sz']) / 2
                         has_found = True
 
             if ctx.options['header_as_bold_centered']:
                 if not_using_styles:
-                    if hasattr(elem, 'rpr') and ('jc' in elem.ppr or 'b' in elem.rpr or 'i' in elem.rpr):
+                    if hasattr(elem, 'rpr') and (
+                            'jc' in elem.paragraph_properties or 'b' in elem.run_properties or 'i' in elem.run_properties):
                         if text_length(elem) < 30:
                             elements[pos].possible_header = True
 
@@ -364,11 +360,10 @@ def mark_styles(ctx, doc, elements):
                 for e in elem.elements:
                     # TODO
                     # check if this is empty element
-                    if hasattr(e, 'rpr') and 'sz' in e.rpr:
+                    if hasattr(e, 'rpr') and 'sz' in e.run_properties:
                         t_length = text_length(elem)
-                        if t_length < ctx.options['header_as_text_length'] and t_length >= ctx.options[
-                            'header_as_text_length_minimum']:
-                            fnt_size = int(e.rpr['sz']) / 2
+                        if ctx.options['header_as_text_length'] > t_length >= ctx.options['header_as_text_length_minimum']:
+                            fnt_size = int(e.run_properties['sz']) / 2
 
                             if fnt_size != font_size:
                                 markers.append({'name': '', 'weight': weight, 'index': pos, 'font_size': fnt_size})
@@ -462,7 +457,7 @@ def get_chapters(doc, options=None, serialize_options=None):
                 for h1 in h1_headers:
                     h1.tag = 'h2'
 
-        return (chapter_title, etree.tostring(body, pretty_print=True, encoding="utf-8", xml_declaration=False))
+        return chapter_title, etree.tostring(body, pretty_print=True, encoding="utf-8", xml_declaration=False)
 
     chapters = split_document(context, doc)
 

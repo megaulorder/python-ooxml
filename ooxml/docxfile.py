@@ -30,23 +30,21 @@ class DOCXFile(object):
     def __init__(self, file_name):
         self.file_name = file_name
 
-        self.reset()
+        self.zipfile = zipfile.ZipFile(self.file_name, 'r')
+        self._doc = None
 
     @property
     def document(self):
         return self._doc
 
     def reset(self):
-        "Resets the values."
-
-        self.zf = zipfile.ZipFile(self.file_name, 'r')
-        self._doc = None
+        """Resets the values."""
 
     def parse(self):
         self._doc = parse_from_file(self)
 
     def read_file(self, file_name):
-        return self.zf.open('word/{}'.format(file_name)).read()
+        return self.zipfile.open('word/{}'.format(file_name)).read()
 
     def close(self):
-        self.zf.close()
+        self.zipfile.close()

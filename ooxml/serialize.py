@@ -237,7 +237,7 @@ def open_list(ctx, document, par, root, elem):
 ###############################################################################
 
 def serialize_break(ctx, document, elem, root):
-    "Serialize break element."
+    """Serialize break element."""
 
     if elem.break_type == u'textWrapping':
         _div = etree.SubElement(root, 'br')
@@ -354,7 +354,7 @@ def has_style(node):
 
     elements = ['b', 'i', 'u', 'strike', 'color', 'jc', 'sz', 'ind', 'superscript', 'subscript', 'small_caps']
 
-    return any([True for elem in elements if elem in node.rpr])
+    return any([True for elem in elements if elem in node.run_properties])
 
 
 def get_style_fontsize(node):
@@ -368,8 +368,8 @@ def get_style_fontsize(node):
 
     """
     if hasattr(node, 'rpr'):
-        if 'sz' in node.rpr:
-            return int(node.rpr['sz']) / 2
+        if 'sz' in node.run_properties:
+            return int(node.run_properties['sz']) / 2
 
     return 0
 
@@ -396,8 +396,8 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         return
 
     if fontsize in [-1, 2]:
-        if 'sz' in node.rpr:
-            size = int(node.rpr['sz']) / 2
+        if 'sz' in node.run_properties:
+            size = int(node.run_properties['sz']) / 2
 
             if ctx.options['embed_fontsize']:
                 if ctx.options['scale_to_size']:
@@ -410,44 +410,44 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
     if fontsize in [-1, 1]:
         # temporarily
         if not embed:
-            if 'b' in node.rpr:
+            if 'b' in node.run_properties:
                 style.append('font-weight: bold')
 
-            if 'i' in node.rpr:
+            if 'i' in node.run_properties:
                 style.append('font-style: italic')
 
-            if 'u' in node.rpr:
+            if 'u' in node.run_properties:
                 style.append('text-decoration: underline')
 
-        if 'small_caps' in node.rpr:
+        if 'small_caps' in node.run_properties:
             style.append('font-variant: small-caps')
 
-        if 'strike' in node.rpr:
+        if 'strike' in node.run_properties:
             style.append('text-decoration: line-through')
 
-        if 'color' in node.rpr:
-            if node.rpr['color'] != '000000':
-                style.append('color: #{}'.format(node.rpr['color']))
+        if 'color' in node.run_properties:
+            if node.run_properties['color'] != '000000':
+                style.append('color: #{}'.format(node.run_properties['color']))
 
-        if 'jc' in node.ppr:
+        if 'jc' in node.paragraph_properties:
             # left right both
-            align = node.ppr['jc']
+            align = node.paragraph_properties['jc']
             if align.lower() == 'both':
                 align = 'justify'
 
             style.append('text-align: {}'.format(align))
 
-        if 'ind' in node.ppr:
-            if 'left' in node.ppr['ind']:
-                size = int(node.ppr['ind']['left']) / 10
+        if 'ind' in node.paragraph_properties:
+            if 'left' in node.paragraph_properties['ind']:
+                size = int(node.paragraph_properties['ind']['left']) / 10
                 style.append('margin-left: {}px'.format(size))
 
-            if 'right' in node.ppr['ind']:
-                size = int(node.ppr['ind']['right']) / 10
+            if 'right' in node.paragraph_properties['ind']:
+                size = int(node.paragraph_properties['ind']['right']) / 10
                 style.append('margin-right: {}px'.format(size))
 
-            if 'first_line' in node.ppr['ind']:
-                size = int(node.ppr['ind']['first_line']) / 10
+            if 'first_line' in node.paragraph_properties['ind']:
+                size = int(node.paragraph_properties['ind']['first_line']) / 10
                 style.append('text-indent: {}px'.format(size))
 
     if len(style) == 0:
@@ -516,7 +516,7 @@ def get_css_classes(document, style):
     :Returns:
       String representing all the CSS classes for this element.
 
-    >>> get_css_classes(doc, st)
+    > get_css_classes(doc, st)
     'header1 normal'
     """
     lst = [st.lower() for st in get_all_styles(document, style)[-1:]] + \
@@ -561,7 +561,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
         if isinstance(el, doc.Text):
             children = list(elem)
             _text_style = get_style_css(ctx, el)
-            _text_class = el.rpr.get('style', '').lower()
+            _text_class = el.run_properties.get('style', '').lower()
 
             if _text_class == '':
                 __s = get_style(document, par)
@@ -571,18 +571,18 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
             if get_style_fontsize(el) > max_font_size:
                 max_font_size = get_style_fontsize(el)
 
-            if 'superscript' in el.rpr:
+            if 'superscript' in el.run_properties:
                 new_element = etree.Element('sup')
                 new_element.text = el.value()
-            elif 'subscript' in el.rpr:
+            elif 'subscript' in el.run_properties:
                 new_element = etree.Element('sub')
                 new_element.text = el.value()
-            elif 'b' in el.rpr or 'i' in el.rpr or 'u' in el.rpr:
+            elif 'b' in el.run_properties or 'i' in el.run_properties or 'u' in el.run_properties:
                 new_element = None
                 _element = None
 
                 def _add_formatting(f, new_element, _element):
-                    if f in el.rpr:
+                    if f in el.run_properties:
                         _t = etree.Element(f)
 
                         if new_element is not None:
@@ -666,11 +666,11 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                     if new_element.text != u'':
                         elem.append(new_element)
 
-    if not par.is_dropcap() and par.ilvl == None:
+    if not par.is_dropcap() and par.ilvl is None:
         if style:
             if ctx.header.is_header(par, max_font_size, elem, style=style):
                 elem.tag = ctx.header.get_header(par, style, elem)
-                if par.ilvl == None:
+                if par.ilvl is None:
                     root = close_list(ctx, root)
                     ctx.ilvl, ctx.numid = None, None
 
@@ -689,7 +689,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
                     if elem.text != '' and len(list(elem)) != 0:
                         elem.tag = ctx.header.get_header(par, max_font_size, elem)
 
-                        if par.ilvl == None:
+                        if par.ilvl is None:
                             root = close_list(ctx, root)
                             ctx.ilvl, ctx.numid = None, None
 
@@ -704,7 +704,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
             elem.append(etree.Entity('nbsp'))
 
     # Indentation is different. We are starting or closing list.
-    if par.ilvl != None:
+    if par.ilvl is not None:
         root = open_list(ctx, document, par, root, elem)
         return root
     else:
@@ -721,7 +721,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
 
 
 def serialize_symbol(ctx, document, el, root):
-    "Serialize special symbols."
+    """Serialize special symbols."""
 
     span = etree.SubElement(root, 'span')
     span.text = el.value()
@@ -732,7 +732,7 @@ def serialize_symbol(ctx, document, el, root):
 
 
 def serialize_footnote(ctx, document, el, root):
-    "Serializes footnotes."
+    """Serializes footnotes."""
 
     footnote_num = el.rid
 
@@ -753,7 +753,7 @@ def serialize_footnote(ctx, document, el, root):
 
 
 def serialize_comment(ctx, document, el, root):
-    "Serializes comment."
+    """Serializes comment."""
 
     # Check if option is turned on
 
@@ -777,7 +777,7 @@ def serialize_comment(ctx, document, el, root):
 
 
 def serialize_endnote(ctx, document, el, root):
-    "Serializes endnotes."
+    """Serializes endnotes."""
 
     footnote_num = el.rid
 
@@ -798,7 +798,7 @@ def serialize_endnote(ctx, document, el, root):
 
 
 def serialize_smarttag(ctx, document, el, root):
-    "Serializes smarttag."
+    """Serializes smarttag."""
 
     if ctx.options['smarttag_span']:
         _span = etree.SubElement(root, 'span', {'class': 'smarttag', 'data-smarttag-element': el.element})
@@ -838,7 +838,7 @@ def serialize_table(ctx, document, table, root):
     if root is None:
         return root
 
-    if ctx.ilvl != None:
+    if ctx.ilvl is not None:
         root = close_list(ctx, root)
         ctx.ilvl, ctx.numid = None, None
 
@@ -868,7 +868,7 @@ def serialize_table(ctx, document, table, root):
                     _ser = ctx.get_serializer(elem)
                     _td = _ser(ctx, document, elem, _td, embed=False)
 
-            if ctx.ilvl != None:
+            if ctx.ilvl is not None:
                 #                root = close_list(ctx, root)
                 _td = close_list(ctx, _td)
 
@@ -922,7 +922,7 @@ class HeaderContext:
         def _filter_font_sizes(sizes):
             for sz, value in sizes:
                 if sz > self.default_font_size:
-                    yield (sz, value)
+                    yield sz, value
 
             return
 
@@ -939,8 +939,8 @@ class HeaderContext:
         for style_id in doc.used_styles:
             style = doc.styles.get_by_id(style_id)
 
-            if hasattr(style, 'rpr') and 'sz' in style.rpr:
-                font_size = int(style.rpr['sz']) / 2
+            if hasattr(style, 'rpr') and 'sz' in style.run_properties:
+                font_size = int(style.run_properties['sz']) / 2
 
                 if font_size <= self.default_font_size:
                     continue
