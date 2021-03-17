@@ -8,8 +8,6 @@
 
 import logging
 
-import six
-
 from .doc import (Paragraph, Table, TableCell, Link, TextBox, TOC, Break)
 from .serialize import _get_font_size
 
@@ -420,8 +418,8 @@ def get_chapters(doc, options=None, serialize_options=None):
     def _serialize_chapter(idx, els, is_frontmatter):
         s = serialize.serialize_elements(doc, els, options=serialize_options)
 
-        if s.startswith(six.b('<div/>')):
-            return ('', six.b('<body></body>'))
+        if s.startswith('<div/>'):
+            return '', '<body></body>'
 
         root = parse_html_string(s[5:-6])
         body = root.find('.//body')

@@ -32,7 +32,6 @@ import collections
 import math
 import os.path
 
-import six
 from lxml import etree
 
 from . import doc
@@ -997,7 +996,7 @@ class HeaderContext:
                     pass
 
             sorted_list_of_sizes = list(
-                collections.OrderedDict(sorted(six.iteritems(list_of_sizes), key=lambda t: t[0])))
+                collections.OrderedDict(sorted(list_of_sizes.items(), key=lambda t: t[0])))
             font_size_to_check = font_size
 
             if len(sorted_list_of_sizes) > 0:
@@ -1085,7 +1084,7 @@ class Context:
         self.options = dict(DEFAULT_OPTIONS)
 
         if options:
-            for opt_key, opt_value in six.iteritems(options):
+            for opt_key, opt_value in options.items():
                 if type(opt_value) == type({}):
                     self.options[opt_key].update(opt_value)
                 else:
@@ -1178,7 +1177,7 @@ def serialize_styles(document, prefix='', options=None):
 
     ctx = Context(document, options=options)
 
-    for style_type, style_id in six.iteritems(document.styles.default_styles):
+    for style_type, style_id in document.styles.default_styles.items():
         if style_type == 'table':
             n = ["table"]
             css_content += _generate(ctx, style_id, n)

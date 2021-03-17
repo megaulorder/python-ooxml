@@ -8,8 +8,6 @@
 
 import collections
 
-import six
-
 
 class Style(object):
     """Style object represent OOXML defined style.
@@ -120,7 +118,7 @@ class Document(object):
     def _calculate_possible_headers(self):
         _headers = []
         _text = []
-        max_count = sum(six.itervalues(self.usage_font_size))
+        max_count = sum(self.usage_font_size.values())
 
         from .serialize import _get_font_size
 
@@ -135,7 +133,7 @@ class Document(object):
 
         _text_list = collections.Counter()
 
-        for font_size, amount in six.iteritems(self.usage_font_size):
+        for font_size, amount in self.usage_font_size.items():
             if float(amount) / max_count <= 0.1:
                 if font_size not in _headers:
                     _headers.append(font_size)
