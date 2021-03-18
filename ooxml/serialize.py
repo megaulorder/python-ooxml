@@ -352,7 +352,7 @@ def has_style(node):
 
     """
 
-    elements = ['b', 'i', 'u', 'strike', 'color', 'jc', 'sz', 'ind', 'superscript', 'subscript', 'small_caps']
+    elements = ['b', 'i', 'u', 'strike', 'color', 'jc', 'sz', 'spacing', 'ind', 'superscript', 'subscript', 'font_family', 'small_caps']
 
     return any([True for elem in elements if elem in node.run_properties])
 
@@ -419,6 +419,10 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
             if 'u' in node.run_properties:
                 style.append('text-decoration: underline')
 
+        if 'font_family' in node.run_properties:
+            font_family = node.run_properties['font_family']
+            style.append('font-family: {}'.format(font_family))
+
         if 'small_caps' in node.run_properties:
             style.append('font-variant: small-caps')
 
@@ -436,6 +440,19 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
                 align = 'justify'
 
             style.append('text-align: {}'.format(align))
+
+        if 'spacing' in node.paragraph_properties:
+            if 'line' in node.paragraph_properties['spacing']:
+                spacing = int(node.paragraph_properties['spacing']['line']) / 240
+                style.append('line-spacing: {}'.format(spacing))
+
+            if 'before' in node.paragraph_properties['spacing']:
+                spacing = int(node.paragraph_properties['spacing']['before']) / 20
+                style.append('before-spacing: {}'.format(spacing))
+
+            if 'after' in node.paragraph_properties['spacing']:
+                spacing = int(node.paragraph_properties['spacing']['after']) / 20
+                style.append('after-spacing: {}'.format(spacing))
 
         if 'ind' in node.paragraph_properties:
             if 'left' in node.paragraph_properties['ind']:

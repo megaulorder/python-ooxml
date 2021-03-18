@@ -7,9 +7,7 @@
 """
 
 import logging
-
 from lxml import etree
-
 from . import doc, NAMESPACES
 
 logger = logging.getLogger('ooxml')
@@ -30,28 +28,33 @@ def is_on(value):
     return value in ['true', 'on', '1']
 
 
-def parse_previous_properties(document, paragraph, property):
+def parse_run_properties(document, paragraph, properties):
     if not paragraph:
         return
 
-    style = property.find(_name('{{{w}}}rStyle'))
+    run_style = properties.find(_name('{{{w}}}rStyle'))
 
-    if style is not None:
-        paragraph.run_properties['style'] = style.attrib[_name('{{{w}}}val')]
+    if run_style is not None:
+        paragraph.run_properties['style'] = run_style.attrib[_name('{{{w}}}val')]
         document.add_style_as_used(paragraph.run_properties['style'])
 
-    text_color = property.find(_name('{{{w}}}color'))
+    text_color = properties.find(_name('{{{w}}}color'))
 
     if text_color is not None:
         paragraph.run_properties['color'] = text_color.attrib[_name('{{{w}}}val')]
 
-    right_to_left = property.find(_name('{{{w}}}rtl'))
+    right_to_left = properties.find(_name('{{{w}}}rtl'))
 
     if right_to_left is not None:
         if is_on(right_to_left.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['rtl'] = True
 
-    text_size = property.find(_name('{{{w}}}sz'))
+    font_family = properties.find(_name('{{{w}}}rFonts'))
+
+    if font_family is not None:
+        paragraph.run_properties['font_family'] = font_family.attrib[_name('{{{w}}}ascii')]
+
+    text_size = properties.find(_name('{{{w}}}sz'))
 
     if text_size is not None:
         paragraph.run_properties['sz'] = text_size.attrib[_name('{{{w}}}val')]
@@ -68,25 +71,25 @@ def parse_previous_properties(document, paragraph, property):
         else:
             document.add_font_as_used(paragraph.run_properties['sz'])
 
-    bold = property.find(_name('{{{w}}}b'))
+    bold = properties.find(_name('{{{w}}}b'))
 
     if bold is not None:
         if is_on(bold.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['b'] = True
 
-    italic = property.find(_name('{{{w}}}i'))
+    italic = properties.find(_name('{{{w}}}i'))
 
     if italic is not None:
         if is_on(italic.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['i'] = True
 
-    underline = property.find(_name('{{{w}}}u'))
+    underline = properties.find(_name('{{{w}}}u'))
 
     if underline is not None:
         if is_on(underline.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['u'] = True
 
-    strikethrough = property.find(_name('{{{w}}}strike'))
+    strikethrough = properties.find(_name('{{{w}}}strike'))
 
     if strikethrough is not None:
         # todo
@@ -94,7 +97,7 @@ def parse_previous_properties(document, paragraph, property):
         if is_on(strikethrough.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['strike'] = True
 
-    vertical_align = property.find(_name('{{{w}}}vertAlign'))
+    vertical_align = properties.find(_name('{{{w}}}vertAlign'))
 
     if vertical_align is not None:
         value = vertical_align.attrib[_name('{{{w}}}val')]
@@ -105,24 +108,24 @@ def parse_previous_properties(document, paragraph, property):
         if value == 'subscript':
             paragraph.run_properties['subscript'] = True
 
-    small_caps = property.find(_name('{{{w}}}smallCaps'))
+    small_caps = properties.find(_name('{{{w}}}smallCaps'))
 
     if small_caps is not None:
         if is_on(small_caps.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['small_caps'] = True
 
 
-def parse_paragraph_properties(document, paragraph, property):
+def parse_paragraph_properties(document, paragraph, properties):
     if not paragraph:
         return
 
-    style = property.find(_name('{{{w}}}pStyle'))
+    paragraph_style = properties.find(_name('{{{w}}}pStyle'))
 
-    if style is not None:
-        paragraph.style_id = style.attrib[_name('{{{w}}}val')]
+    if paragraph_style is not None:
+        paragraph.style_id = paragraph_style.attrib[_name('{{{w}}}val')]
         document.add_style_as_used(paragraph.style_id)
 
-    numpr = property.find(_name('{{{w}}}numPr'))
+    numpr = properties.find(_name('{{{w}}}numPr'))
 
     if numpr is not None:
         ilvl = numpr.find(_name('{{{w}}}ilvl'))
@@ -135,12 +138,26 @@ def parse_paragraph_properties(document, paragraph, property):
         if numid is not None:
             paragraph.numid = int(numid.attrib[_name('{{{w}}}val')])
 
-    alignment = property.find(_name('{{{w}}}jc'))
+    alignment = properties.find(_name('{{{w}}}jc'))
 
     if alignment is not None:
         paragraph.paragraph_properties['jc'] = alignment.attrib[_name('{{{w}}}val')]
 
-    indentation = property.find(_name('{{{w}}}ind'))
+    spacing = properties.find(_name('{{{w}}}spacing'))
+
+    if spacing is not None:
+        paragraph.paragraph_properties['spacing'] = {}
+
+        if _name('{{{w}}}line') in spacing.attrib:
+            paragraph.paragraph_properties['spacing']['line'] = spacing.attrib[_name('{{{w}}}line')]
+
+        if _name('{{{w}}}before') in spacing.attrib:
+            paragraph.paragraph_properties['spacing']['before'] = spacing.attrib[_name('{{{w}}}before')]
+
+        if _name('{{{w}}}after') in spacing.attrib:
+            paragraph.paragraph_properties['spacing']['after'] = spacing.attrib[_name('{{{w}}}after')]
+
+    indentation = properties.find(_name('{{{w}}}ind'))
 
     if indentation is not None:
         paragraph.paragraph_properties['ind'] = {}
@@ -154,7 +171,7 @@ def parse_paragraph_properties(document, paragraph, property):
         if _name('{{{w}}}firstLine') in indentation.attrib:
             paragraph.paragraph_properties['ind']['first_line'] = indentation.attrib[_name('{{{w}}}firstLine')]
 
-    frame_pr = property.find(_name('{{{w}}}framePr'))
+    frame_pr = properties.find(_name('{{{w}}}framePr'))
 
     if frame_pr is not None:
         if _name('{{{w}}}dropCap') in frame_pr.attrib:
@@ -163,10 +180,11 @@ def parse_paragraph_properties(document, paragraph, property):
             if drop_cap.lower() in ['drop', 'margin']:
                 paragraph.paragraph_properties['dropcap'] = True
 
-    run_properties = property.find(_name('{{{w}}}rPr'))
-
-    if run_properties is not None:
-        parse_previous_properties(document, paragraph, run_properties)
+    # Do not show run properties in paragraph
+    # run_properties = properties.find(_name('{{{w}}}rPr'))
+    #
+    # if run_properties is not None:
+    #     parse_run_properties(document, paragraph, run_properties)
 
 
 def parse_drawing(document, container, elem):
@@ -249,7 +267,7 @@ def parse_text(document, container, element):
 
     if rpr is not None:
         # Notice it is using txt as container
-        parse_previous_properties(document, txt, rpr)
+        parse_run_properties(document, txt, rpr)
 
     for r in element.findall(_name('{{{w}}}r')):
         parse_text(document, container, r)
@@ -497,7 +515,7 @@ def parse_style(document, xmlcontent):
 
         if rpr is not None:
             st = doc.Style()
-            parse_previous_properties(document, st, rpr)
+            parse_run_properties(document, st, rpr)
             document.default_style = st
 
     # rest of the styles
@@ -532,7 +550,7 @@ def parse_style(document, xmlcontent):
         rpr = style.find(_name('{{{w}}}rPr'))
 
         if rpr is not None:
-            parse_previous_properties(document, st, rpr)
+            parse_run_properties(document, st, rpr)
 
         ppr = style.find(_name('{{{w}}}pPr'))
 
