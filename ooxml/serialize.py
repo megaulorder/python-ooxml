@@ -456,16 +456,16 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
 
         if 'ind' in node.paragraph_properties:
             if 'left' in node.paragraph_properties['ind']:
-                size = int(node.paragraph_properties['ind']['left']) / 10
-                style.append('margin-left: {}px'.format(size))
+                size = int(node.paragraph_properties['ind']['left']) / 567
+                style.append('margin-left: {:.2f}cm'.format(size))
 
             if 'right' in node.paragraph_properties['ind']:
-                size = int(node.paragraph_properties['ind']['right']) / 10
-                style.append('margin-right: {}px'.format(size))
+                size = int(node.paragraph_properties['ind']['right']) / 567
+                style.append('margin-right: {:.2f}cm'.format(size))
 
             if 'first_line' in node.paragraph_properties['ind']:
-                size = int(node.paragraph_properties['ind']['first_line']) / 10
-                style.append('text-indent: {}px'.format(size))
+                size = int(node.paragraph_properties['ind']['first_line']) / 567
+                style.append('first-line: {:.2f}cm'.format(size))
 
     if len(style) == 0:
         return ''
