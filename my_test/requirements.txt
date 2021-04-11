@@ -1,0 +1,4 @@
+docx
+dictdiffer
+bs4
+configobj
