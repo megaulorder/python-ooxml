@@ -377,7 +377,7 @@ def get_style_fontsize(node):
 def get_style_css(ctx, node, embed=True, fontsize=-1):
     """Returns as string defined CSS for this node.
 
-    Defined CSS can be different if it is embeded or no. When it is embeded styling 
+    Defined CSS can be different if it is embedded or not. When it is embedded, styling
     for bold,italic and underline will not be defined with CSS. In that case we
     use defined tags <b>,<i>,<u> from the content.
 
@@ -411,17 +411,17 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         # temporarily
         # if not embed:
         if 'b' in node.run_properties:
-            style.append('font-weight: bold')
+            style.append('bold: true')
 
         if 'i' in node.run_properties:
-            style.append('font-style: italic')
+            style.append('italic: true')
 
         if 'u' in node.run_properties:
             type = node.run_properties['u']
             style.append('underline: {}'.format(type))
 
         if 'strike' in node.run_properties:
-            style.append('text-decoration: line-through')
+            style.append('line-through: true')
 
         if 'font_family' in node.run_properties:
             font_family = node.run_properties['font_family']
@@ -595,9 +595,9 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
             elif 'subscript' in el.run_properties:
                 new_element = etree.Element('sub')
                 new_element.text = el.value()
-            elif 'b' in el.run_properties or 'i' in el.run_properties or 'u' in el.run_properties:
-                new_element = None
-                _element = None
+            # elif 'b' in el.run_properties or 'i' in el.run_properties or 'u' in el.run_properties:
+            #     new_element = None
+            #     _element = None
 
                 def _add_formatting(f, new_element, _element):
                     if f in el.run_properties:
@@ -612,11 +612,11 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
 
                     return new_element, _element
 
-                new_element, _element = _add_formatting('b', new_element, _element)
-                new_element, _element = _add_formatting('i', new_element, _element)
-                new_element, _element = _add_formatting('u', new_element, _element)
+                # new_element, _element = _add_formatting('b', new_element, _element)
+                # new_element, _element = _add_formatting('i', new_element, _element)
+                # new_element, _element = _add_formatting('u', new_element, _element)
 
-                _element.text = el.value()
+                # _element.text = el.value()
 
                 for comment_id in ctx.opened_comments:
                     document.comments[comment_id].text += ' ' + el.value()
