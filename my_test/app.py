@@ -13,7 +13,7 @@ config_path = 'config.ini'
 html_path = 'sample.html'
 
 PARAGRAPH = 'p'
-TEXT = 'span'
+SPAN = 'span'
 BOLD = 'b'
 
 
@@ -40,11 +40,11 @@ def convert_docx_to_html():
 def get_properties_from_html():
     file = open(html_path)
     soup = BeautifulSoup(file, 'html.parser')
-    properties = {'PARAGRAPH': {}, 'FONT': {}}
-    paragraph_properties = dict(item.split(": ") for item in soup.__getattr__(PARAGRAPH).attrs['style'][:-1].split(";"))
-    text_properties = dict(item.split(": ") for item in soup.__getattr__('b').attrs['style'][:-1].split(";"))
-    properties['PARAGRAPH'] = paragraph_properties
-    properties['FONT'] = text_properties
+    paragraph_properties = [[dict([i.split(': ') for i in r['style'][:-1].split('; ')])]
+                            for r in soup.find_all(PARAGRAPH)]
+    run_properties = [[dict([k.split(': ') for k in j['style'][:-1].split('; ')]) for j in r.find_all_next(SPAN)]
+                      for r in soup.find_all(PARAGRAPH)]
+    properties = list(zip(paragraph_properties, run_properties))
 
     return properties
 
@@ -62,16 +62,24 @@ def check_differences(config, properties):
     return list(difference)
 
 
+def print_difference(difference, section_name):
+    print(f'{section_name} difference:')
+    if not any(difference):
+        print('ok')
+    else:
+        for i in difference:
+            if len(i) > 0:
+                print(i)
+
+
 def run():
     write_xml()
     convert_docx_to_html()
-    # config = read_config()
-    # print('config', config['HEADER'])
-    # properties = get_properties_from_html()
-    # print('properties', properties)
-    # difference = check_differences(config['HEADER'], properties)
-    #
-    # if len(difference) == 0:
-    #     print('ok')
-    # else:
-    #     print(difference)
+    config = read_config()['HEADER']
+    print('config', config)
+    properties = get_properties_from_html()
+    print('properties', properties)
+    # paragraph_difference = [check_differences(config['PARAGRAPH'], i) for i in properties['PARAGRAPH']]
+    # run_difference = [check_differences(config['FONT'], i) for i in properties['FONT']]
+    # print_difference(paragraph_difference, 'paragraph')
+    # print_difference(run_difference, 'run')

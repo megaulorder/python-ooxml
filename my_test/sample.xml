@@ -1,43 +1,9 @@
 <w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex wp14">
   <w:body>
-    <w:p w14:paraId="4443902C" w14:textId="2FD3DDE2" w:rsidR="00471E78" w:rsidRPr="00682923" w:rsidRDefault="00793B5D" w:rsidP="00A26512">
+    <w:p w14:paraId="3E0FAB33" w14:textId="6F26E74B" w:rsidR="0077227A" w:rsidRDefault="00CD5C91" w:rsidP="00246015">
       <w:pPr>
         <w:jc w:val="center"/>
         <w:rPr>
-          <w:b/>
-          <w:bCs/>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-      </w:pPr>
-      <w:r w:rsidRPr="00682923">
-        <w:rPr>
-          <w:b/>
-          <w:bCs/>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>T</w:t>
-      </w:r>
-      <w:r w:rsidR="008368D2">
-        <w:rPr>
-          <w:b/>
-          <w:bCs/>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>his is bold</w:t>
-      </w:r>
-    </w:p>
-    <w:p w14:paraId="78724604" w14:textId="78AE0540" w:rsidR="00DF3B66" w:rsidRPr="00682923" w:rsidRDefault="008368D2" w:rsidP="00A26512">
-      <w:pPr>
-        <w:jc w:val="center"/>
-        <w:rPr>
-          <w:i/>
-          <w:iCs/>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
           <w:lang w:val="en-US"/>
@@ -45,113 +11,82 @@
       </w:pPr>
       <w:r>
         <w:rPr>
-          <w:i/>
-          <w:iCs/>
+          <w:b/>
+          <w:bCs/>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
-        <w:t>This is italic</w:t>
+        <w:t xml:space="preserve">This </w:t>
       </w:r>
-    </w:p>
-    <w:p w14:paraId="5B45E953" w14:textId="70FA8084" w:rsidR="009D4826" w:rsidRDefault="00A26512" w:rsidP="00A26512">
-      <w:pPr>
-        <w:jc w:val="center"/>
-        <w:rPr>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:u w:val="single"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-      </w:pPr>
-      <w:r w:rsidRPr="00682923">
-        <w:rPr>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:u w:val="single"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>T</w:t>
-      </w:r>
-      <w:r w:rsidR="008368D2">
-        <w:rPr>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:u w:val="single"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>his is underlined</w:t>
-      </w:r>
-    </w:p>
-    <w:p w14:paraId="552146BB" w14:textId="5D120649" w:rsidR="008368D2" w:rsidRPr="008368D2" w:rsidRDefault="008368D2" w:rsidP="00A26512">
-      <w:pPr>
-        <w:jc w:val="center"/>
+      <w:r w:rsidR="002D3D4D">
         <w:rPr>
           <w:b/>
           <w:bCs/>
-          <w:i/>
-          <w:iCs/>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
-      </w:pPr>
-      <w:r w:rsidRPr="008368D2">
+        <w:t>text</w:t>
+      </w:r>
+      <w:r>
         <w:rPr>
           <w:b/>
           <w:bCs/>
-          <w:i/>
-          <w:iCs/>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
-        <w:t>This is bold and italic</w:t>
+        <w:t xml:space="preserve"> is bold</w:t>
       </w:r>
-    </w:p>
-    <w:p w14:paraId="17880A0B" w14:textId="47ED815F" w:rsidR="008368D2" w:rsidRDefault="008368D2" w:rsidP="00A26512">
-      <w:pPr>
-        <w:jc w:val="center"/>
-        <w:rPr>
-          <w:strike/>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-      </w:pPr>
-      <w:r w:rsidRPr="008368D2">
-        <w:rPr>
-          <w:strike/>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>This is strikethrough</w:t>
-      </w:r>
-    </w:p>
-    <w:p w14:paraId="7D88F4D9" w14:textId="62EE5467" w:rsidR="00E37DB7" w:rsidRPr="00E37DB7" w:rsidRDefault="00E37DB7" w:rsidP="00A26512">
-      <w:pPr>
-        <w:jc w:val="center"/>
+      <w:r w:rsidR="002D3D4D">
         <w:rPr>
           <w:b/>
           <w:bCs/>
-          <w:i/>
-          <w:iCs/>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
-      </w:pPr>
-      <w:r w:rsidRPr="00E37DB7">
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:proofErr w:type="gramStart"/>
+      <w:r w:rsidR="0077227A">
         <w:rPr>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
-        <w:t>This is normal</w:t>
+        <w:t>But</w:t>
+      </w:r>
+      <w:proofErr w:type="gramEnd"/>
+      <w:r w:rsidR="0077227A">
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:val="en-US"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> this isn’t</w:t>
       </w:r>
     </w:p>
-    <w:sectPr w:rsidR="00E37DB7" w:rsidRPr="00E37DB7">
+    <w:p w14:paraId="42840DC6" w14:textId="7F372389" w:rsidR="00246015" w:rsidRPr="00246015" w:rsidRDefault="00246015" w:rsidP="00246015">
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:val="en-US"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:val="en-US"/>
+        </w:rPr>
+        <w:t>This isn’t bold too</w:t>
+      </w:r>
+    </w:p>
+    <w:sectPr w:rsidR="00246015" w:rsidRPr="00246015">
       <w:pgSz w:w="11906" w:h="16838"/>
       <w:pgMar w:top="1134" w:right="850" w:bottom="1134" w:left="1701" w:header="708" w:footer="708" w:gutter="0"/>
       <w:cols w:space="708"/>
