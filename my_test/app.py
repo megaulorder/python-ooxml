@@ -42,7 +42,7 @@ def get_properties_from_html():
     soup = BeautifulSoup(file, 'html.parser')
     properties = {'PARAGRAPH': {}, 'FONT': {}}
     paragraph_properties = dict(item.split(": ") for item in soup.__getattr__(PARAGRAPH).attrs['style'][:-1].split(";"))
-    text_properties = dict(item.split(": ") for item in soup.__getattr__(TEXT).attrs['style'][:-1].split(";"))
+    text_properties = dict(item.split(": ") for item in soup.__getattr__('b').attrs['style'][:-1].split(";"))
     properties['PARAGRAPH'] = paragraph_properties
     properties['FONT'] = text_properties
 
@@ -65,13 +65,13 @@ def check_differences(config, properties):
 def run():
     write_xml()
     convert_docx_to_html()
-    config = read_config()
-    print('config', config['HEADER'])
-    properties = get_properties_from_html()
-    print('properties', properties)
-    difference = check_differences(config['HEADER'], properties)
-
-    if len(difference) == 0:
-        print('ok')
-    else:
-        print(difference)
+    # config = read_config()
+    # print('config', config['HEADER'])
+    # properties = get_properties_from_html()
+    # print('properties', properties)
+    # difference = check_differences(config['HEADER'], properties)
+    #
+    # if len(difference) == 0:
+    #     print('ok')
+    # else:
+    #     print(difference)
