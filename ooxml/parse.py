@@ -28,6 +28,13 @@ def is_on(value):
     return value in ['true', 'on', '1']
 
 
+def return_underline_value(value):
+    return value in ['single', 'words', 'double', 'thick', 'dotted',
+                    'dottedHeavy', 'dash', 'dashedHeavy', 'dashLong',
+                    'dashLongHeavy', 'dotDash', 'dashDotHeavy', 'dotDotDash',
+                    'dashDotDotHeavy', 'wave', 'wavyHeavy', 'wavyDouble']
+
+
 def parse_run_properties(document, paragraph, properties):
     if not paragraph:
         return
@@ -86,8 +93,9 @@ def parse_run_properties(document, paragraph, properties):
     underline = properties.find(_name('{{{w}}}u'))
 
     if underline is not None:
-        if is_on(underline.attrib.get(_name('{{{w}}}val'), 'on')):
-            paragraph.run_properties['u'] = True
+        value = underline.attrib[_name('{{{w}}}val')]
+        if return_underline_value(value):
+            paragraph.run_properties['u'] = value
 
     strikethrough = properties.find(_name('{{{w}}}strike'))
 

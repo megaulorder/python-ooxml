@@ -409,15 +409,19 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
 
     if fontsize in [-1, 1]:
         # temporarily
-        if not embed:
-            if 'b' in node.run_properties:
-                style.append('font-weight: bold')
+        # if not embed:
+        if 'b' in node.run_properties:
+            style.append('font-weight: bold')
 
-            if 'i' in node.run_properties:
-                style.append('font-style: italic')
+        if 'i' in node.run_properties:
+            style.append('font-style: italic')
 
-            if 'u' in node.run_properties:
-                style.append('text-decoration: underline')
+        if 'u' in node.run_properties:
+            type = node.run_properties['u']
+            style.append('underline: {}'.format(type))
+
+        if 'strike' in node.run_properties:
+            style.append('text-decoration: line-through')
 
         if 'font_family' in node.run_properties:
             font_family = node.run_properties['font_family']
@@ -425,9 +429,6 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
 
         if 'small_caps' in node.run_properties:
             style.append('font-variant: small-caps')
-
-        if 'strike' in node.run_properties:
-            style.append('text-decoration: line-through')
 
         if 'color' in node.run_properties:
             if node.run_properties['color'] != '000000':
