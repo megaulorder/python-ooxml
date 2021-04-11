@@ -40,7 +40,7 @@ def convert_docx_to_html():
 def get_properties_from_html():
     file = open(html_path)
     soup = BeautifulSoup(file, 'html.parser')
-    paragraph_properties = [[dict([i.split(': ') for i in r['style'][:-1].split('; ')])]
+    paragraph_properties = [dict([i.split(': ') for i in r['style'][:-1].split('; ')])
                             for r in soup.find_all(PARAGRAPH)]
     run_properties = [[dict([k.split(': ') for k in j['style'][:-1].split('; ')]) for j in r.find_all_next(SPAN)]
                       for r in soup.find_all(PARAGRAPH)]
@@ -57,19 +57,29 @@ def write_xml():
     file.write(document_xml)
 
 
-def check_differences(config, properties):
-    difference = diff(config, properties)
+def get_difference(config, properties):
+    difference = diff(properties, config)
     return list(difference)
 
 
+def compare_paragraphs(config, properties):
+    paragraph_difference = [get_difference(config['PARAGRAPH'], i[0]) for i in properties]
+    return paragraph_difference
+
+
+def compare_runs(config, properties):
+    run_differences = [[get_difference(config['FONT'], j) for j in i[1]] for i in properties]
+    return run_differences
+
+
 def print_difference(difference, section_name):
-    print(f'{section_name} difference:')
+    print(f'{section_name} DIFFERENCE:')
     if not any(difference):
         print('ok')
     else:
-        for i in difference:
-            if len(i) > 0:
-                print(i)
+        for i in range(len(difference)):
+            if len(difference[i]) > 0:
+                print(f'ERROR IN PARAGRAPH {i}\n', difference[i])
 
 
 def run():
@@ -79,7 +89,10 @@ def run():
     print('config', config)
     properties = get_properties_from_html()
     print('properties', properties)
-    # paragraph_difference = [check_differences(config['PARAGRAPH'], i) for i in properties['PARAGRAPH']]
-    # run_difference = [check_differences(config['FONT'], i) for i in properties['FONT']]
-    # print_difference(paragraph_difference, 'paragraph')
-    # print_difference(run_difference, 'run')
+    print('===========================================')
+    print('CHECKING...')
+    paragraph_difference = compare_paragraphs(config, properties)
+    run_difference = compare_runs(config, properties)
+    print_difference(paragraph_difference, 'PARAGRAPH')
+    print('===========================================')
+    print_difference(run_difference, 'RUN')
