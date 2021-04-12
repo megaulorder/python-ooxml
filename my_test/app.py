@@ -88,19 +88,26 @@ def compare_styles(config, paragraphs_for_styles):
     run_difference = [compare_runs(config[style], properties, paragraphs_for_styles[style])
                       for style in config.keys()]
 
-    return dict(zip(config.keys(), [paragraph_difference, run_difference]))
+    paragraph_difference_by_style = dict(zip(config.keys(), paragraph_difference))
+    run_difference_by_style = dict(zip(config.keys(), run_difference))
+
+    return paragraph_difference_by_style, run_difference_by_style
 
 
 def print_difference(difference, paragraphs_for_styles):
     for style in paragraphs_for_styles.keys():
-        paragraph = dict(zip(paragraphs_for_styles[style], difference[style][0]))
-        font = dict(zip(paragraphs_for_styles[style], difference[style][1]))
+        paragraph = dict(zip(paragraphs_for_styles[style], difference[0][style]))
+        font = dict(zip(paragraphs_for_styles[style], difference[1][style]))
+
+        empty_values = [[], [[]]]
 
         for key, value in paragraph.items():
-            print(key + 1, ' : ', paragraph[key]) if paragraph[key] != [[]] else print(key + 1, ' : ', 'ok')
+            print(key + 1, ': paragraph properties ', paragraph[key])\
+                if paragraph[key] not in empty_values else print(key + 1, ' : paragraph properties ok')
 
         for key, value in font.items():
-            print(key + 1, ' : ', font[key]) if font[key] != [[]] else print(key + 1, ' : ', 'ok')
+            print(key + 1, ': font properties ', font[key])\
+                if font[key] not in empty_values else print(key + 1, ' : font properties ok')
 
 
 def run():
