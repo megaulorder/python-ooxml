@@ -27,7 +27,6 @@ def convert_docx_to_html():
 
     dfile = ooxml.read_from_file(file_name)
     output = serialize.serialize(dfile.document).decode("utf-8")
-    print(output)
 
     file = open('sample.html', 'w')
     file.write(output)
@@ -56,47 +55,58 @@ def write_xml():
     file.write(document_xml)
 
 
-def get_paragraph_count(config):
-    return [int(i) for i in config['PARAGRAPH_COUNT']['paragraphs']]
+def get_paragraphs_count(style):
+    return [int(i) - 1 for i in style['PARAGRAPH_COUNT']['paragraphs']]
 
 
-def get_difference(config, properties):
-    difference = diff(properties, config)
-    return list(difference)
+def get_paragraphs_for_styles(config):
+    return dict(zip(config.keys(), [get_paragraphs_count(style) for style in config.values()]))
 
 
-def compare_paragraphs(config, properties):
-    paragraph_difference = [get_difference(config['PARAGRAPH'], i[0]) for i in properties]
+def get_difference(style, properties):
+    return list(diff(properties, style))
+
+
+def compare_paragraphs(style, properties, paragraph_count):
+    selected_paragraphs = [properties[i] for i in paragraph_count]
+    paragraph_difference = [get_difference(style['PARAGRAPH'], i[0]) for i in selected_paragraphs]
+
     return paragraph_difference
 
 
-def compare_runs(config, properties):
-    run_differences = [[get_difference(config['FONT'], j) for j in i[1]] for i in properties]
+def compare_runs(style, properties, paragraph_count):
+    selected_paragraphs = [properties[i] for i in paragraph_count]
+    run_differences = [[get_difference(style['FONT'], j) for j in i[1]] for i in selected_paragraphs]
+
     return run_differences
 
 
-def print_difference(difference, section_name):
-    print(f'{section_name} DIFFERENCE:')
-    if not any(difference):
-        print('ok')
-    else:
-        for i in range(len(difference)):
-            if len(difference[i]) > 0:
-                print(f'ERROR IN PARAGRAPH {i + 1}\n', difference[i])
+def compare_styles(config, paragraphs_for_styles):
+    properties = get_properties_from_html()
+    paragraph_difference = [compare_paragraphs(config[style], properties, paragraphs_for_styles[style])
+                            for style in config.keys()]
+    run_difference = [compare_runs(config[style], properties, paragraphs_for_styles[style])
+                      for style in config.keys()]
+
+    return dict(zip(config.keys(), [paragraph_difference, run_difference]))
+
+
+def print_difference(difference, paragraphs_for_styles):
+    for style in paragraphs_for_styles.keys():
+        paragraph = dict(zip(paragraphs_for_styles[style], difference[style][0]))
+        font = dict(zip(paragraphs_for_styles[style], difference[style][1]))
+
+        for key, value in paragraph.items():
+            print(key + 1, ' : ', paragraph[key]) if paragraph[key] != [[]] else print(key + 1, ' : ', 'ok')
+
+        for key, value in font.items():
+            print(key + 1, ' : ', font[key]) if font[key] != [[]] else print(key + 1, ' : ', 'ok')
 
 
 def run():
     write_xml()
     convert_docx_to_html()
-    config = read_config()['HEADER']
-    count = get_paragraph_count(config)
-    print('config', config)
-    properties = get_properties_from_html()
-    print('properties', properties)
-    print('===========================================')
-    print('CHECKING...')
-    paragraph_difference = compare_paragraphs(config, properties)
-    run_difference = compare_runs(config, properties)
-    print_difference(paragraph_difference, 'PARAGRAPH')
-    print('===========================================')
-    print_difference(run_difference, 'RUN')
+    config = read_config()
+    paragraphs_for_styles = get_paragraphs_for_styles(config)
+    difference = compare_styles(config, paragraphs_for_styles)
+    print_difference(difference, paragraphs_for_styles)
