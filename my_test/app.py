@@ -12,10 +12,6 @@ docx_path = 'test.docx'
 config_path = 'config.ini'
 html_path = 'sample.html'
 
-PARAGRAPH = 'p'
-SPAN = 'span'
-BOLD = 'b'
-
 
 def read_config():
     config = ConfigObj('config.ini')
@@ -38,11 +34,14 @@ def convert_docx_to_html():
 
 
 def get_properties_from_html():
+    PARAGRAPH = 'p'
+    SPAN = 'span'
+
     file = open(html_path)
     soup = BeautifulSoup(file, 'html.parser')
     paragraph_properties = [dict([i.split(': ') for i in r['style'][:-1].split('; ')])
                             for r in soup.find_all(PARAGRAPH)]
-    run_properties = [[dict([k.split(': ') for k in j['style'][:-1].split('; ')]) for j in r.find_all_next(SPAN)]
+    run_properties = [[dict([k.split(': ') for k in j['style'][:-1].split('; ')]) for j in r.find_all(SPAN)]
                       for r in soup.find_all(PARAGRAPH)]
     properties = list(zip(paragraph_properties, run_properties))
 
@@ -55,6 +54,10 @@ def write_xml():
     document_xml = document.element.xml
     file = open('sample.xml', 'w')
     file.write(document_xml)
+
+
+def get_paragraph_count(config):
+    return [int(i) for i in config['PARAGRAPH_COUNT']['paragraphs']]
 
 
 def get_difference(config, properties):
@@ -79,13 +82,14 @@ def print_difference(difference, section_name):
     else:
         for i in range(len(difference)):
             if len(difference[i]) > 0:
-                print(f'ERROR IN PARAGRAPH {i}\n', difference[i])
+                print(f'ERROR IN PARAGRAPH {i + 1}\n', difference[i])
 
 
 def run():
     write_xml()
     convert_docx_to_html()
     config = read_config()['HEADER']
+    count = get_paragraph_count(config)
     print('config', config)
     properties = get_properties_from_html()
     print('properties', properties)
