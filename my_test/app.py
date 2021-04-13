@@ -1,9 +1,11 @@
 import logging
-import ooxml
-from configobj import ConfigObj
-from docx import Document
+
 from bs4 import BeautifulSoup
+from configobj import ConfigObj
 from dictdiffer import diff
+from docx import Document
+
+import ooxml
 from ooxml import serialize
 
 logging.basicConfig(filename='ooxml.log', level=logging.INFO)
@@ -11,6 +13,22 @@ logging.basicConfig(filename='ooxml.log', level=logging.INFO)
 docx_path = 'test.docx'
 config_path = 'config.ini'
 html_path = 'sample.html'
+
+
+def flatten(l, ltypes=(list, tuple)):
+    ltype = type(l)
+    l = list(l)
+    i = 0
+    while i < len(l):
+        while isinstance(l[i], ltypes):
+            if not l[i]:
+                l.pop(i)
+                i -= 1
+                break
+            else:
+                l[i:i + 1] = l[i]
+        i += 1
+    return ltype(l)
 
 
 def read_config():
@@ -38,10 +56,12 @@ def get_properties_from_html():
 
     file = open(html_path)
     soup = BeautifulSoup(file, 'html.parser')
+
     paragraph_properties = [dict([i.split(': ') for i in r['style'][:-1].split('; ')])
                             for r in soup.find_all(PARAGRAPH)]
     run_properties = [[dict([k.split(': ') for k in j['style'][:-1].split('; ')]) for j in r.find_all(SPAN)]
                       for r in soup.find_all(PARAGRAPH)]
+
     properties = list(zip(paragraph_properties, run_properties))
 
     return properties
@@ -90,8 +110,7 @@ def compare_runs(style, properties, paragraph_count):
     return run_differences
 
 
-def compare_styles(styles, paragraphs_for_styles):
-    properties = get_properties_from_html()
+def compare_styles(styles, paragraphs_for_styles, properties):
     paragraph_difference = [compare_paragraphs(styles[style], properties, paragraphs_for_styles[style])
                             for style in styles.keys()]
     run_difference = [compare_runs(styles[style], properties, paragraphs_for_styles[style])
@@ -103,10 +122,23 @@ def compare_styles(styles, paragraphs_for_styles):
     return paragraph_difference_by_style, run_difference_by_style
 
 
-def print_difference(difference, paragraphs_for_styles):
+def compare_substyles(substyles, paragraphs_for_substyles, properties):
+    run_difference = [compare_runs(substyles[substyle], properties, paragraphs_for_substyles[substyle])
+                      for substyle in substyles.keys()]
+
+    run_difference_by_substyle = dict(zip(substyles.keys(), run_difference))
+
+    for substyle in run_difference_by_substyle.keys():
+        run_difference_by_substyle[substyle] = [any([not any(a == 'add' for a in flatten(run)) for run in paragraph])
+                                                for paragraph in run_difference_by_substyle[substyle]]
+
+    return run_difference_by_substyle
+
+
+def print_difference(difference_by_styles, difference_by_substyles, paragraphs_for_styles, paragraphs_for_substyles):
     for style in paragraphs_for_styles.keys():
-        paragraph = dict(zip(paragraphs_for_styles[style], difference[0][style]))
-        font = dict(zip(paragraphs_for_styles[style], difference[1][style]))
+        paragraph = dict(zip(paragraphs_for_styles[style], difference_by_styles[0][style]))
+        font = dict(zip(paragraphs_for_styles[style], difference_by_styles[1][style]))
 
         empty_values = [[], [[]]]
 
@@ -118,12 +150,20 @@ def print_difference(difference, paragraphs_for_styles):
             print(key + 1, ': font properties ', font[key]) \
                 if font[key] not in empty_values else print(key + 1, ' : font properties ok')
 
+    for substyle in paragraphs_for_substyles.keys():
+        font = dict(zip(paragraphs_for_substyles[substyle], difference_by_substyles[substyle]))
+        for key, value in font.items():
+            print('substyle ', substyle, ' is not in use in paragraph ', key + 1) if value is False else None
+
 
 def run():
     write_xml()
     convert_docx_to_html()
+    properties = get_properties_from_html()
     config = read_config()
     styles_and_substyles = separate_styles_from_substyles(config)
     paragraphs_for_styles = get_paragraphs_for_styles(styles_and_substyles[0])
-    difference = compare_styles(styles_and_substyles[0], paragraphs_for_styles)
-    print_difference(difference, paragraphs_for_styles)
+    paragraphs_for_substyles = get_paragraphs_for_styles(styles_and_substyles[1])
+    difference_by_substyles = compare_substyles(styles_and_substyles[1], paragraphs_for_substyles, properties)
+    difference_by_styles = compare_styles(styles_and_substyles[0], paragraphs_for_styles, properties)
+    print_difference(difference_by_styles, difference_by_substyles, paragraphs_for_styles, paragraphs_for_substyles)
