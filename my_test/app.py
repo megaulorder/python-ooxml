@@ -55,6 +55,15 @@ def write_xml():
     file.write(document_xml)
 
 
+def separate_styles_from_substyles(config):
+    style_names = [style for style in config.keys() if 'sub-' not in style.lower()]
+    substyle_names = [style for style in config.keys() if 'sub-' in style.lower()]
+    styles = {style: config[style] for style in style_names}
+    substyles = {substyle: config[substyle] for substyle in substyle_names}
+
+    return styles, substyles
+
+
 def get_paragraphs_count(style):
     return [int(i) - 1 for i in style['PARAGRAPH_COUNT']['paragraphs']]
 
@@ -81,15 +90,15 @@ def compare_runs(style, properties, paragraph_count):
     return run_differences
 
 
-def compare_styles(config, paragraphs_for_styles):
+def compare_styles(styles, paragraphs_for_styles):
     properties = get_properties_from_html()
-    paragraph_difference = [compare_paragraphs(config[style], properties, paragraphs_for_styles[style])
-                            for style in config.keys()]
-    run_difference = [compare_runs(config[style], properties, paragraphs_for_styles[style])
-                      for style in config.keys()]
+    paragraph_difference = [compare_paragraphs(styles[style], properties, paragraphs_for_styles[style])
+                            for style in styles.keys()]
+    run_difference = [compare_runs(styles[style], properties, paragraphs_for_styles[style])
+                      for style in styles.keys()]
 
-    paragraph_difference_by_style = dict(zip(config.keys(), paragraph_difference))
-    run_difference_by_style = dict(zip(config.keys(), run_difference))
+    paragraph_difference_by_style = dict(zip(styles.keys(), paragraph_difference))
+    run_difference_by_style = dict(zip(styles.keys(), run_difference))
 
     return paragraph_difference_by_style, run_difference_by_style
 
@@ -102,11 +111,11 @@ def print_difference(difference, paragraphs_for_styles):
         empty_values = [[], [[]]]
 
         for key, value in paragraph.items():
-            print(key + 1, ': paragraph properties ', paragraph[key])\
+            print(key + 1, ': paragraph properties ', paragraph[key]) \
                 if paragraph[key] not in empty_values else print(key + 1, ' : paragraph properties ok')
 
         for key, value in font.items():
-            print(key + 1, ': font properties ', font[key])\
+            print(key + 1, ': font properties ', font[key]) \
                 if font[key] not in empty_values else print(key + 1, ' : font properties ok')
 
 
@@ -114,6 +123,7 @@ def run():
     write_xml()
     convert_docx_to_html()
     config = read_config()
-    paragraphs_for_styles = get_paragraphs_for_styles(config)
-    difference = compare_styles(config, paragraphs_for_styles)
+    styles_and_substyles = separate_styles_from_substyles(config)
+    paragraphs_for_styles = get_paragraphs_for_styles(styles_and_substyles[0])
+    difference = compare_styles(styles_and_substyles[0], paragraphs_for_styles)
     print_difference(difference, paragraphs_for_styles)
