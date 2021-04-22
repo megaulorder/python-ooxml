@@ -50,7 +50,15 @@ def convert_docx_to_html():
     file.write(output)
 
 
-def get_properties_from_html():
+# only for debugging
+def write_xml():
+    document = Document(docx_path)
+    document_xml = document.element.xml
+    file = open('sample.xml', 'w')
+    file.write(document_xml)
+
+
+def get_data_from_html():
     PARAGRAPH = 'p'
     SPAN = 'span'
 
@@ -64,15 +72,9 @@ def get_properties_from_html():
 
     properties = list(zip(paragraph_properties, run_properties))
 
-    return properties
+    paragraphs_text = [text.replace('\n', '')[:30] for text in soup.get_text().split('\n\n\n')[:-1]]
 
-
-# only for debugging
-def write_xml():
-    document = Document(docx_path)
-    document_xml = document.element.xml
-    file = open('sample.xml', 'w')
-    file.write(document_xml)
+    return properties, paragraphs_text
 
 
 def separate_styles_from_substyles(config):
@@ -165,7 +167,8 @@ def font_diff_to_string(difference):
     return out_string if out_string != '' else difference
 
 
-def print_difference(difference_by_styles, difference_by_substyles, paragraphs_for_styles, paragraphs_for_substyles):
+def print_difference(difference_by_styles, difference_by_substyles,
+                     paragraphs_for_styles, paragraphs_for_substyles, text):
     output = {}
     for style in paragraphs_for_styles.keys():
         paragraph = dict(zip(paragraphs_for_styles[style], difference_by_styles[0][style]))
@@ -180,21 +183,22 @@ def print_difference(difference_by_styles, difference_by_substyles, paragraphs_f
             output[key + 1].append(
                 list(filter(None, font[key])) if font[key] not in empty_values else 'font properties ok')
 
-    print('Checking paragraphs...\n')
+    print('Checking paragraphs...')
 
     for key, value in output.items():
-        print(f'#{key} : \n\t{paragraph_diff_to_string(value[0])} \n\t{font_diff_to_string(value[1])}')
+        print(f'\nParagraph #{key} {text[key - 1]}...')
+        print(f'\t{paragraph_diff_to_string(value[0])} \n\t{font_diff_to_string(value[1])}')
 
     for substyle in paragraphs_for_substyles.keys():
         font = dict(zip(paragraphs_for_substyles[substyle], difference_by_substyles[substyle]))
         for key, value in font.items():
-            print(f'\nsubstyle SUB-{substyle} is not in use in paragraph {key + 1}') if value is False else None
+            print(f'\nSubstyle SUB-{substyle} is not in use in paragraph #{key + 1}') if value is False else None
 
 
 def run():
     write_xml()
     convert_docx_to_html()
-    properties = get_properties_from_html()
+    properties, text = get_data_from_html()
     config = read_config()
 
     styles, substyles = separate_styles_from_substyles(config)
@@ -205,4 +209,5 @@ def run():
     difference_by_styles = compare_styles(styles, substyles, paragraphs_for_styles, properties)
     difference_by_substyles = compare_substyles(substyles, paragraphs_for_substyles, properties)
 
-    print_difference(difference_by_styles, difference_by_substyles, paragraphs_for_styles, paragraphs_for_substyles)
+    print_difference(difference_by_styles, difference_by_substyles,
+                     paragraphs_for_styles, paragraphs_for_substyles, text)
