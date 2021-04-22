@@ -1,8 +1,9 @@
 <w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex wp14">
   <w:body>
-    <w:p w14:paraId="79CAA0EE" w14:textId="0A862B69" w:rsidR="002B65ED" w:rsidRDefault="00246015" w:rsidP="002B65ED">
+    <w:p w14:paraId="79CAA0EE" w14:textId="0A862B69" w:rsidR="002B65ED" w:rsidRDefault="00246015" w:rsidP="00840B96">
       <w:pPr>
-        <w:jc w:val="center"/>
+        <w:ind w:right="567"/>
+        <w:jc w:val="right"/>
         <w:rPr>
           <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
           <w:lang w:val="en-US"/>
@@ -46,8 +47,9 @@
         <w:t xml:space="preserve"> is allowed</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="583C0A20" w14:textId="0D2A7695" w:rsidR="003E652F" w:rsidRDefault="003E652F" w:rsidP="002B65ED">
+    <w:p w14:paraId="583C0A20" w14:textId="0D2A7695" w:rsidR="003E652F" w:rsidRDefault="003E652F" w:rsidP="00E97E22">
       <w:pPr>
+        <w:spacing w:line="360" w:lineRule="auto"/>
         <w:jc w:val="center"/>
         <w:rPr>
           <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
@@ -62,63 +64,27 @@
         <w:t>This header does not have bold</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="3113E59B" w14:textId="42DFFF9F" w:rsidR="00B17C0B" w:rsidRPr="00B17C0B" w:rsidRDefault="00B17C0B" w:rsidP="002B65ED">
+    <w:p w14:paraId="1E81FDE3" w14:textId="540529A6" w:rsidR="00A40ABE" w:rsidRPr="00A40ABE" w:rsidRDefault="00A40ABE" w:rsidP="002B65ED">
       <w:pPr>
         <w:jc w:val="center"/>
         <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
-          <w:b/>
-          <w:bCs/>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
       </w:pPr>
-      <w:r>
+      <w:r w:rsidRPr="00A40ABE">
         <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
           <w:lang w:val="en-US"/>
         </w:rPr>
-        <w:t xml:space="preserve"> </w:t>
+        <w:t>Style 2</w:t>
       </w:r>
-      <w:r w:rsidRPr="00B17C0B">
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
-          <w:b/>
-          <w:bCs/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t xml:space="preserve">TEST </w:t>
-      </w:r>
-      <w:proofErr w:type="spellStart"/>
-      <w:r w:rsidRPr="00A76828">
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>TEST</w:t>
-      </w:r>
-      <w:proofErr w:type="spellEnd"/>
-      <w:r w:rsidRPr="00B17C0B">
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
-          <w:b/>
-          <w:bCs/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:proofErr w:type="spellStart"/>
-      <w:r w:rsidRPr="00B17C0B">
-        <w:rPr>
-          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
-          <w:b/>
-          <w:bCs/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>TEST</w:t>
-      </w:r>
-      <w:proofErr w:type="spellEnd"/>
     </w:p>
-    <w:sectPr w:rsidR="00B17C0B" w:rsidRPr="00B17C0B">
+    <w:sectPr w:rsidR="00A40ABE" w:rsidRPr="00A40ABE">
       <w:pgSz w:w="11906" w:h="16838"/>
       <w:pgMar w:top="1134" w:right="850" w:bottom="1134" w:left="1701" w:header="708" w:footer="708" w:gutter="0"/>
       <w:cols w:space="708"/>

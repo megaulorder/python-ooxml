@@ -135,7 +135,33 @@ def compare_substyles(substyles, paragraphs_for_substyles, properties):
     return run_difference_by_substyle
 
 
+def paragraph_diff_to_string(difference):
+    out_string = ''
+    if difference != 'paragraph properties ok':
+        for d in difference:
+            if d[0] == 'change':
+                out_string += f'{d[0]} {d[1]} from {d[2][0]} to {d[2][1]}; '
+            elif d[0] in (['add', 'remove']):
+                out_string += ''.join([f'{d[0]} property {i[0]} with value {i[1]}; ' for i in d[2]])
+
+    return out_string if out_string != '' else difference
+
+
+def font_diff_to_string(difference):
+    out_string = ''
+    if difference != 'font properties ok':
+        for run in difference:
+            for d in run:
+                if d[0] == 'change':
+                    out_string += f'{d[0]} {d[1]} from {d[2][0]} to {d[2][1]}; '
+                elif d[0] in (['add', 'remove']):
+                    out_string += ''.join([f'{d[0]} property {i[0]} with value {i[1]}; ' for i in d[2]])
+
+    return out_string if out_string != '' else difference
+
+
 def print_difference(difference_by_styles, difference_by_substyles, paragraphs_for_styles, paragraphs_for_substyles):
+    output = {}
     for style in paragraphs_for_styles.keys():
         paragraph = dict(zip(paragraphs_for_styles[style], difference_by_styles[0][style]))
         font = dict(zip(paragraphs_for_styles[style], difference_by_styles[1][style]))
@@ -143,17 +169,21 @@ def print_difference(difference_by_styles, difference_by_substyles, paragraphs_f
         empty_values = [[], [[]]]
 
         for key, value in paragraph.items():
-            print(key + 1, ': paragraph properties ', paragraph[key]) \
-                if paragraph[key] not in empty_values else print(key + 1, ' : paragraph properties ok')
+            output[key + 1] = [paragraph[key]] if paragraph[key] not in empty_values else ['paragraph properties ok']
 
         for key, value in font.items():
-            print(key + 1, ': font properties ', font[key]) \
-                if font[key] not in empty_values else print(key + 1, ' : font properties ok')
+            output[key + 1].append(
+                list(filter(None, font[key])) if font[key] not in empty_values else 'font properties ok')
+
+    print('Checking paragraphs...\n')
+
+    for key, value in output.items():
+        print(f'#{key} : \n\t{paragraph_diff_to_string(value[0])} \n\t{font_diff_to_string(value[1])}')
 
     for substyle in paragraphs_for_substyles.keys():
         font = dict(zip(paragraphs_for_substyles[substyle], difference_by_substyles[substyle]))
         for key, value in font.items():
-            print('substyle ', substyle, ' is not in use in paragraph ', key + 1) if value is False else None
+            print('\nsubstyle ', substyle, ' is not in use in paragraph ', key + 1) if value is False else None
 
 
 def run():
