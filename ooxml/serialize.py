@@ -423,6 +423,9 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         if 'strike' in node.run_properties:
             style.append('line-through: true')
 
+        if 'vertical_align' in node.run_properties:
+            style.append('vertical-align: {}'.format(node.run_properties['vertical_align']))
+
         if 'font_family' in node.run_properties:
             font_family = node.run_properties['font_family']
             style.append('font-family: {}'.format(font_family))

@@ -108,13 +108,17 @@ def parse_run_properties(document, paragraph, properties):
     vertical_align = properties.find(_name('{{{w}}}vertAlign'))
 
     if vertical_align is not None:
-        value = vertical_align.attrib[_name('{{{w}}}val')]
-
-        if value == 'superscript':
-            paragraph.run_properties['superscript'] = True
-
-        if value == 'subscript':
-            paragraph.run_properties['subscript'] = True
+        paragraph.run_properties['vertical_align'] = vertical_align.attrib[_name('{{{w}}}val')]
+        # value = vertical_align.attrib[_name('{{{w}}}val')]
+        #
+        # if return_underline_value(value):
+        #     paragraph.run_properties['u'] = value
+        #
+        # if value == 'superscript':
+        #     paragraph.run_properties['superscript'] = True
+        #
+        # if value == 'subscript':
+        #     paragraph.run_properties['subscript'] = True
 
     small_caps = properties.find(_name('{{{w}}}smallCaps'))
 
