@@ -437,6 +437,9 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
             if node.run_properties['color'] != '000000':
                 style.append('color: #{}'.format(node.run_properties['color']))
 
+        if 'highlight' in node.run_properties:
+            style.append('highlight: {}'.format(node.run_properties['highlight']))
+
         if 'jc' in node.paragraph_properties:
             # left right both
             align = node.paragraph_properties['jc']

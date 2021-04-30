@@ -126,6 +126,11 @@ def parse_run_properties(document, paragraph, properties):
         if is_on(small_caps.attrib.get(_name('{{{w}}}val'), 'on')):
             paragraph.run_properties['small_caps'] = True
 
+    highlight = properties.find(_name('{{{w}}}highlight'))
+
+    if highlight is not None:
+        paragraph.run_properties['highlight'] = highlight.attrib[_name('{{{w}}}val')]
+
 
 def parse_paragraph_properties(document, paragraph, properties):
     if not paragraph:
