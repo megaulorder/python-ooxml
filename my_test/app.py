@@ -120,7 +120,7 @@ def compare_styles(styles, substyles, paragraphs_for_styles, properties):
     ignored = get_ignored_properties(styles, substyles)
     paragraph_difference = [compare_paragraphs(styles[style], properties, paragraphs_for_styles[style])
                             for style in styles.keys()]
-    run_difference = [compare_runs(styles[style], properties, paragraphs_for_styles[style], ignored[style])
+    run_difference = [compare_runs(styles[style], properties, paragraphs_for_styles[style])
                       for style in styles.keys()]
 
     paragraph_difference_by_style = dict(zip(styles.keys(), paragraph_difference))
@@ -136,7 +136,7 @@ def compare_substyles(substyles, paragraphs_for_substyles, properties):
     run_difference_by_substyle = dict(zip(substyles.keys(), run_difference))
 
     for substyle in run_difference_by_substyle.keys():
-        run_difference_by_substyle[substyle] = [any([not any(a == 'add' for a in flatten(run)) for run in paragraph])
+        run_difference_by_substyle[substyle] = [any([not any(a in (['add', 'change']) for a in flatten(run)) for run in paragraph])
                                                 for paragraph in run_difference_by_substyle[substyle]]
 
     return run_difference_by_substyle
