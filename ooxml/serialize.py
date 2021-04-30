@@ -448,6 +448,9 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
 
             style.append('text-align: {}'.format(align))
 
+        if 'shd' in node.paragraph_properties:
+            style.append('background-color: {}'.format(node.paragraph_properties['shd']))
+
         if 'spacing' in node.paragraph_properties:
             if 'line' in node.paragraph_properties['spacing']:
                 spacing = int(node.paragraph_properties['spacing']['line']) / 240

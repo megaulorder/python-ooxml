@@ -188,6 +188,11 @@ def parse_paragraph_properties(document, paragraph, properties):
         if _name('{{{w}}}firstLine') in indentation.attrib:
             paragraph.paragraph_properties['ind']['first_line'] = indentation.attrib[_name('{{{w}}}firstLine')]
 
+    background_color = properties.find(_name('{{{w}}}shd'))
+
+    if background_color is not None:
+        paragraph.paragraph_properties['shd'] = background_color.attrib[_name('{{{w}}}fill')]
+
     frame_pr = properties.find(_name('{{{w}}}framePr'))
 
     if frame_pr is not None:
