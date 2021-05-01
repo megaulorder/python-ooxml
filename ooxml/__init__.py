@@ -8,6 +8,7 @@ NAMESPACES = {
     # Text Content
     'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
     'w10': 'urn:schemas-microsoft-com:office:word',
+    'w14': 'http://schemas.microsoft.com/office/word/2010/wordml',
     'wne': 'http://schemas.microsoft.com/office/word/2006/wordml',
     # Drawing
     'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',

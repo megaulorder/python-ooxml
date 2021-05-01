@@ -440,6 +440,18 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         if 'highlight' in node.run_properties:
             style.append('highlight: {}'.format(node.run_properties['highlight']))
 
+        if 'shadow' in node.run_properties:
+            style.append('shadow: true')
+
+        if 'outline' in node.run_properties:
+            style.append('outline: true')
+
+        if 'reflection' in node.run_properties:
+            style.append('reflection: true')
+
+        if 'glow' in node.run_properties:
+            style.append('glow: true')
+
         if 'jc' in node.paragraph_properties:
             # left right both
             align = node.paragraph_properties['jc']

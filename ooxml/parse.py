@@ -131,6 +131,26 @@ def parse_run_properties(document, paragraph, properties):
     if highlight is not None:
         paragraph.run_properties['highlight'] = highlight.attrib[_name('{{{w}}}val')]
 
+    shadow = properties.find(_name('{{{w14}}}shadow'))
+
+    if shadow is not None:
+        paragraph.run_properties['shadow'] = True
+
+    outline = properties.find(_name('{{{w14}}}textOutline'))
+
+    if outline is not None:
+        paragraph.run_properties['outline'] = True
+
+    reflection = properties.find(_name('{{{w14}}}reflection'))
+
+    if reflection is not None:
+        paragraph.run_properties['reflection'] = True
+
+    glow = properties.find(_name('{{{w14}}}glow'))
+
+    if glow is not None:
+        paragraph.run_properties['glow'] = True
+
 
 def parse_paragraph_properties(document, paragraph, properties):
     if not paragraph:
