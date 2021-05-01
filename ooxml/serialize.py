@@ -210,7 +210,7 @@ def open_list(ctx, document, par, root, elem):
 
         #        if ctx.numid is not None and par.numid > ctx.numid:
         #            if ctx.numid != None:
-        if par.numid > ctx.numid:
+        if not ctx.numid:
             fmt = _get_numbering(document, par.numid, par.ilvl)
             _ls = etree.SubElement(root, _get_numbering_tag(fmt))
             fire_hooks(ctx, document, par, _ls, ctx.get_hook(_get_numbering_tag(fmt)))
