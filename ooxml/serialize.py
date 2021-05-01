@@ -222,12 +222,14 @@ def open_list(ctx, document, par, root, elem):
     ctx.numid = par.numid
 
     _a = etree.SubElement(root, 'li')
-    _a.text = elem.text
+    _p = etree.SubElement(_a, 'p')
+    _p.text = elem.text
 
     for a in list(elem):
-        _a.append(a)
+        _p.append(a)
 
     fire_hooks(ctx, document, par, _a, ctx.get_hook('li'))
+    fire_hooks(ctx, document, par, _p, ctx.get_hook('p'))
 
     return root
 
