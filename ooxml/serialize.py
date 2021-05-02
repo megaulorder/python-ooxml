@@ -225,6 +225,9 @@ def open_list(ctx, document, par, root, elem):
     _p = etree.SubElement(_a, 'p')
     _p.text = elem.text
 
+    _style = get_style_css(ctx, par)
+    _p.set('style', _style)
+
     for a in list(elem):
         _p.append(a)
 
