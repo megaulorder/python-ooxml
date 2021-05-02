@@ -376,8 +376,7 @@ def parse_smarttag(document, container, tag_elem):
 
 def parse_section(document, sect):
     section = doc.Section()
-    for elem in sect:
-        parse_section_properties(document, section, sect)
+    parse_section_properties(document, section, sect)
 
     return section
 
