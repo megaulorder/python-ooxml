@@ -246,11 +246,11 @@ def serialize_break(ctx, document, elem, root):
     """Serialize break element."""
 
     if elem.break_type == u'textWrapping':
-        _div = etree.SubElement(root, 'br')
+        _div = etree.SubElement(root, 'page-break')
     else:
-        _div = etree.SubElement(root, 'span')
+        _div = etree.SubElement(root, 'break')
         if ctx.options['embed_styles']:
-            _div.set('style', 'page-break-after: always;')
+            _div.set('style', 'page-break-after')
 
     fire_hooks(ctx, document, elem, _div, ctx.get_hook('page_break'))
 
@@ -503,7 +503,13 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         # section properties
 
         if 'page_height' in node.section_properties:
-            style.append('page-height: {}'.format(node.section_properties['page_height']))
+            style.append('page-height: {:.0f}mm'.format(int(node.section_properties['page_height']) * 0.017638889))
+
+        if 'page_width' in node.section_properties:
+            style.append('page-width: {:.0f}mm'.format(int(node.section_properties['page_width']) * 0.017638889))
+
+        if 'orientation' in node.section_properties:
+            style.append('orientation: {}'.format(node.section_properties['orientation']))
 
     if len(style) == 0:
         return ''
@@ -580,19 +586,14 @@ def get_css_classes(document, style):
     return ' '.join(lst)
 
 
-def serialize_section(ctx, document, sect, root):
-    style = get_style(document, sect)
-
-    _sect = etree.SubElement(root, 'sect')
+def serialize_section(ctx, document, sect, root):   # section outside paragraph
+    _sect = etree.SubElement(root, 'section')
 
     _style = get_style_css(ctx, sect)
     if _style != '':
         _sect.set('style', _style)
 
-    # for a in list(elem):
-    #     _sect.append(a)
-
-    fire_hooks(ctx, document, sect, _sect, ctx.get_hook('sect'))
+    fire_hooks(ctx, document, sect, _sect, ctx.get_hook('section'))
 
     return root
 
@@ -643,12 +644,12 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
             if get_style_fontsize(el) > max_font_size:
                 max_font_size = get_style_fontsize(el)
 
-            if 'superscript' in el.run_properties:
-                new_element = etree.Element('sup')
-                new_element.text = el.value()
-            elif 'subscript' in el.run_properties:
-                new_element = etree.Element('sub')
-                new_element.text = el.value()
+            # if 'superscript' in el.run_properties:
+            #     new_element = etree.Element('sup')
+            #     new_element.text = el.value()
+            # elif 'subscript' in el.run_properties:
+            #     new_element = etree.Element('sub')
+            #     new_element.text = el.value()
             # elif 'b' in el.run_properties or 'i' in el.run_properties or 'u' in el.run_properties:
             #     new_element = None
             #     _element = None

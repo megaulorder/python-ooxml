@@ -39,9 +39,10 @@ def parse_section_properties(document, section, properties):
     if not section:
         return
 
-    page_height = properties.find(_name('{{{w}}}pgSz'))
-    if page_height is not None:
-        section.section_properties['page_height'] = page_height.attrib[_name('{{{w}}}h')]
+    page_size = properties.find(_name('{{{w}}}pgSz'))
+    if page_size is not None:
+        section.section_properties['page_height'] = page_size.attrib[_name('{{{w}}}h')]
+        section.section_properties['page_width'] = page_size.attrib[_name('{{{w}}}w')]
 
 
 def parse_run_properties(document, paragraph, properties):
@@ -295,16 +296,16 @@ def parse_text(document, container, element):
     if alternate is not None:
         parse_alternate(document, container, alternate)
 
-    br = element.find(_name('{{{w}}}br'))
+    br = element.find(_name('{{{w}}}lastRenderedPageBreak'))
 
     if br is not None:
         if _name('{{{w}}}type') in br.attrib:
             _type = br.attrib[_name('{{{w}}}type')]
-            brk = doc.Break(_type)
+            page_break = doc.Break(_type)
         else:
-            brk = doc.Break()
+            page_break = doc.Break()
 
-        container.elements.append(brk)
+        document.elements.append(page_break)
 
     t = element.find(_name('{{{w}}}t'))
 
@@ -379,6 +380,19 @@ def parse_section(document, sect):
     parse_section_properties(document, section, sect)
 
     return section
+
+
+def get_section_from_paragraph(document, par):
+    paragraph = doc.Paragraph()
+    paragraph.document = document
+
+    for elem in par:
+        if elem.tag == _name('{{{w}}}pPr'):
+            for e in elem:
+                if e.tag == _name('{{{w}}}sectPr'):
+                    document.elements.append(parse_section(document, e))
+
+    return
 
 
 def parse_paragraph(document, par):
@@ -529,6 +543,7 @@ def parse_document(xmlcontent):
     for elem in body:
         if elem.tag == _name('{{{w}}}p'):
             document.elements.append(parse_paragraph(document, elem))
+            document.elements.append(get_section_from_paragraph(document, elem))
 
         if elem.tag == _name('{{{w}}}tbl'):
             document.elements.append(parse_table(document, elem))
