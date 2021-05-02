@@ -40,9 +40,24 @@ def parse_section_properties(document, section, properties):
         return
 
     page_size = properties.find(_name('{{{w}}}pgSz'))
+
     if page_size is not None:
         section.section_properties['page_height'] = page_size.attrib[_name('{{{w}}}h')]
         section.section_properties['page_width'] = page_size.attrib[_name('{{{w}}}w')]
+
+        if _name('{{{w}}}orient') in page_size.attrib:
+            section.section_properties['orientation'] = page_size.attrib[_name('{{{w}}}orient')]
+        else:
+            section.section_properties['orientation'] = 'portrait'
+
+    page_margins = properties.find(_name('{{{w}}}pgMar'))
+
+    if page_margins is not None:
+        section.section_properties['page_margins'] = [
+            page_margins.attrib[_name('{{{w}}}top')],
+            page_margins.attrib[_name('{{{w}}}right')],
+            page_margins.attrib[_name('{{{w}}}bottom')],
+            page_margins.attrib[_name('{{{w}}}left')]]
 
 
 def parse_run_properties(document, paragraph, properties):

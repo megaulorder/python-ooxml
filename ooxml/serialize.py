@@ -511,6 +511,10 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         if 'orientation' in node.section_properties:
             style.append('orientation: {}'.format(node.section_properties['orientation']))
 
+        if 'page_margins' in node.section_properties:
+            margins_in_mm = [int(margin) * 0.017638889 for margin in node.section_properties['page_margins']]
+            style.append('page-margins: {:.0f} {:.0f} {:.0f} {:.0f}'.format(*margins_in_mm))
+
     if len(style) == 0:
         return ''
 
