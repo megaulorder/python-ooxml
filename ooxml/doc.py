@@ -196,6 +196,16 @@ class Element(object):
         return None
 
 
+class Section(Element):
+    def __init__(self):
+        super(Section, self).__init__()
+
+        self.elements = []
+        self.run_properties = {}
+        self.paragraph_properties = {}
+        self.section_properties = {}
+
+
 class Paragraph(Element):
     """Represents basic paragraph element in OOXML document.
 
@@ -217,8 +227,10 @@ class Paragraph(Element):
 
         self.run_properties = {}
         self.paragraph_properties = {}
+        self.section_properties = {}
 
         self.possible_header = False
+        self.parent = None
 
     def is_dropcap(self):
         return 'dropcap' in self.paragraph_properties and self.paragraph_properties['dropcap']
@@ -233,6 +245,7 @@ class Text(Element):
         self.text = text
         self.run_properties = {}
         self.paragraph_properties = {}
+        self.section_properties = {}
         self.parent = None
 
     def value(self):

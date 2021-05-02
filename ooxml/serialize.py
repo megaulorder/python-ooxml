@@ -226,7 +226,8 @@ def open_list(ctx, document, par, root, elem):
     _p.text = elem.text
 
     _style = get_style_css(ctx, par)
-    _p.set('style', _style)
+    if _style != '':
+        _p.set('style', _style)
 
     for a in list(elem):
         _p.append(a)
@@ -415,6 +416,9 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
     if fontsize in [-1, 1]:
         # temporarily
         # if not embed:
+
+        # run properties
+
         if 'b' in node.run_properties:
             style.append('bold: true')
 
@@ -457,6 +461,8 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         if 'glow' in node.run_properties:
             style.append('glow: true')
 
+        # paragraph_properties
+
         if 'jc' in node.paragraph_properties:
             # left right both
             align = node.paragraph_properties['jc']
@@ -493,6 +499,11 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
             if 'first_line' in node.paragraph_properties['ind']:
                 size = int(node.paragraph_properties['ind']['first_line']) / 567
                 style.append('first-line: {:.2f}cm'.format(size))
+
+        # section properties
+
+        if 'page_height' in node.section_properties:
+            style.append('page-height: {}'.format(node.section_properties['page_height']))
 
     if len(style) == 0:
         return ''
@@ -567,6 +578,23 @@ def get_css_classes(document, style):
           ['{}-fontsize'.format(st.lower()) for st in get_all_styles(document, style)[-1:]]
 
     return ' '.join(lst)
+
+
+def serialize_section(ctx, document, sect, root):
+    style = get_style(document, sect)
+
+    _sect = etree.SubElement(root, 'sect')
+
+    _style = get_style_css(ctx, sect)
+    if _style != '':
+        _sect.set('style', _style)
+
+    # for a in list(elem):
+    #     _sect.append(a)
+
+    fire_hooks(ctx, document, sect, _sect, ctx.get_hook('sect'))
+
+    return root
 
 
 def serialize_paragraph(ctx, document, par, root, embed=True):
@@ -1080,6 +1108,7 @@ class HeaderContext:
 
 DEFAULT_OPTIONS = {
     'serializers': {
+        doc.Section: serialize_section,
         doc.Paragraph: serialize_paragraph,
         doc.Table: serialize_table,
         doc.Link: serialize_link,

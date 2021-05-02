@@ -35,6 +35,15 @@ def return_underline_value(value):
                     'dashDotDotHeavy', 'wave', 'wavyHeavy', 'wavyDouble']
 
 
+def parse_section_properties(document, section, properties):
+    if not section:
+        return
+
+    page_height = properties.find(_name('{{{w}}}pgSz'))
+    if page_height is not None:
+        section.section_properties['page_height'] = page_height.attrib[_name('{{{w}}}h')]
+
+
 def parse_run_properties(document, paragraph, properties):
     if not paragraph:
         return
@@ -365,6 +374,14 @@ def parse_smarttag(document, container, tag_elem):
     return
 
 
+def parse_section(document, sect):
+    section = doc.Section()
+    for elem in sect:
+        parse_section_properties(document, section, sect)
+
+    return section
+
+
 def parse_paragraph(document, par):
     """Parse paragraph element.
 
@@ -519,6 +536,9 @@ def parse_document(xmlcontent):
 
         if elem.tag == _name('{{{w}}}sdt'):
             document.elements.append(doc.TOC())
+
+        if elem.tag == _name('{{{w}}}sectPr'):
+            document.elements.append(parse_section(document, elem))
 
     return document
 
