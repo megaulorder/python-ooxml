@@ -84,7 +84,7 @@ def parse_run_properties(document, paragraph, properties):
     font_family = properties.find(_name('{{{w}}}rFonts'))
 
     if font_family is not None:
-        paragraph.run_properties['font_family'] = font_family.attrib[_name('{{{w}}}ascii')]
+        paragraph.run_properties['font_family'] = font_family.attrib.get(_name('{{{w}}}ascii'))
 
     text_size = properties.find(_name('{{{w}}}sz'))
 

@@ -584,8 +584,9 @@ def get_css_classes(document, style):
     > get_css_classes(doc, st)
     'header1 normal'
     """
-    lst = [st.lower() for st in get_all_styles(document, style)[-1:]] + \
-          ['{}-fontsize'.format(st.lower()) for st in get_all_styles(document, style)[-1:]]
+    lst = [st.lower() for st in get_all_styles(document, style)[-1:]]
+    # lst = [st.lower() for st in get_all_styles(document, style)[-1:]] + \
+    #       ['{}-fontsize'.format(st.lower()) for st in get_all_styles(document, style)[-1:]]
 
     return ' '.join(lst)
 
@@ -648,15 +649,15 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
             if get_style_fontsize(el) > max_font_size:
                 max_font_size = get_style_fontsize(el)
 
-            # if 'superscript' in el.run_properties:
-            #     new_element = etree.Element('sup')
-            #     new_element.text = el.value()
-            # elif 'subscript' in el.run_properties:
-            #     new_element = etree.Element('sub')
-            #     new_element.text = el.value()
-            # elif 'b' in el.run_properties or 'i' in el.run_properties or 'u' in el.run_properties:
-            #     new_element = None
-            #     _element = None
+            if 'superscript' in el.run_properties:
+                new_element = etree.Element('sup')
+                new_element.text = el.value()
+            elif 'subscript' in el.run_properties:
+                new_element = etree.Element('sub')
+                new_element.text = el.value()
+            elif 'b' in el.run_properties or 'i' in el.run_properties or 'u' in el.run_properties:
+                new_element = None
+                _element = None
 
                 def _add_formatting(f, new_element, _element):
                     if f in el.run_properties:
