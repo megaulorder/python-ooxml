@@ -66,9 +66,10 @@ def get_data_from_html():
 
     properties = list(zip(paragraph_properties, run_properties))
 
-    paragraphs_text = [text.replace('\n', '')[:30] for text in soup.get_text().split('\n\n\n')[:-1]]
-
-    paragraphs_parents = [True if par.find_parent(LIST_ELEMENT) else False for par in soup.find_all(PARAGRAPH)]
+    paragraphs_text = [text.replace('\n', '')[:30] for text in soup.get_text().split('\n\n\n')[:-1] if text != '']
+    paragraphs_parents = ['ol' if par.find_parent(ORDERED_LIST)
+                          else 'ul' if par.find_parent(UNORDERED_LIST)
+                          else False for par in soup.find_all(PARAGRAPH)]
 
     return properties, paragraphs_text, paragraphs_parents
 
@@ -161,16 +162,24 @@ def check_lists(lists, paragraphs_for_styles, paragraphs_parents):
         for style in lists.keys():
             if lists[style]:
                 for par in paragraphs_for_styles[style]:
-                    config_lists_in_paragraphs[par] = True
+                    if lists[style].keys()[0] == 'ordered-list':
+                        config_lists_in_paragraphs[par] = 'ol'
+                    elif lists[style].keys()[0] == 'unordered-list':
+                        config_lists_in_paragraphs[par] = 'ul'
 
     out = []
     for par in range(len(config_lists_in_paragraphs)):
-        if config_lists_in_paragraphs[par] == paragraphs_parents[par]:
-            out.append('paragraph is a list element (ok)')
+        if config_lists_in_paragraphs[par] and paragraphs_parents[par]:
+            if config_lists_in_paragraphs[par] == paragraphs_parents[par]:
+                out.append('paragraph is a list element (ok)')
+            else:
+                out.append(f'change list type from {paragraphs_parents[par]} to {config_lists_in_paragraphs[par]}')
         elif config_lists_in_paragraphs[par] and not paragraphs_parents[par]:
             out.append('paragraph is not a list element (ok)')
         elif not config_lists_in_paragraphs[par] and paragraphs_parents[par]:
             out.append('remove list from paragraph')
+        else:
+            out.append(None)
 
     return out
 
@@ -191,8 +200,10 @@ def font_diff_to_string(difference, substyles=None, substyles_by_paragraph=None)
     out_string = ''
 
     if substyles:
-        ignored_values = dict(zip(flatten([substyles[style]['FONT'].keys() for style in substyles.keys() if style in substyles_by_paragraph]),
-                                  flatten([substyles[style]['FONT'].values() for style in substyles.keys() if style in substyles_by_paragraph])))
+        ignored_values = dict(zip(
+            flatten([substyles[style]['FONT'].keys() for style in substyles.keys() if style in substyles_by_paragraph]),
+            flatten(
+                [substyles[style]['FONT'].values() for style in substyles.keys() if style in substyles_by_paragraph])))
         if difference != 'font properties ok':
             for run in difference:
                 for d in run:
@@ -248,8 +259,9 @@ def print_result(paragraph_difference, text, lists, substyles=None, difference_b
             print(f'\nParagraph #{key} {text[key - 1]}...')
             print(f'\t{paragraph_diff_to_string(value[0])}'
                   f'\n\t{font_diff_to_string(value[1], substyles, substyles_by_paragraphs[key - 1])}'
-                  f'\n\tSubstyles {", ".join(["SUB-" + i for i in substyles_by_paragraphs[key - 1]])} are used') #debug
-            print(f'\t{lists[key - 1]}')
+                  f'\n\tSubstyles {", ".join(["SUB-" + i for i in substyles_by_paragraphs[key - 1]])} are used')  # debug
+            if lists[key - 1]:
+                print(f'\t{lists[key - 1]}')
 
         for substyle in paragraphs_for_substyles.keys():
             font = dict(zip(paragraphs_for_substyles[substyle], difference_by_substyles[substyle].values()))
@@ -261,7 +273,8 @@ def print_result(paragraph_difference, text, lists, substyles=None, difference_b
             print(f'\nParagraph #{key} {text[key - 1]}...')
             print(f'\t{paragraph_diff_to_string(value[0])}'
                   f'\n\t{font_diff_to_string(value[1])}')
-            print(f'\t{lists[key - 1]}')
+            if lists[key-1]:
+                print(f'\t{lists[key - 1]}')
 
 
 def run():
@@ -283,7 +296,8 @@ def run():
         difference_by_substyles, substyles_by_paragraphs = compare_substyles(substyles, paragraphs_for_substyles,
                                                                              properties)
         print_result(get_paragraph_difference_for_styles(difference_by_styles, paragraphs_for_styles),
-                     text, lists_difference, substyles, difference_by_substyles, paragraphs_for_substyles, substyles_by_paragraphs)
+                     text, lists_difference, substyles, difference_by_substyles, paragraphs_for_substyles,
+                     substyles_by_paragraphs)
     else:
         print_result(get_paragraph_difference_for_styles(difference_by_styles, paragraphs_for_styles),
                      text, lists_difference)

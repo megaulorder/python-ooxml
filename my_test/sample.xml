@@ -18,12 +18,12 @@
         <w:t>I’ll take</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="639C88AE" w14:textId="76D13BA6" w:rsidR="00AC6E3B" w:rsidRPr="00ED57D5" w:rsidRDefault="00AC6E3B" w:rsidP="007B418E">
+    <w:p w14:paraId="639C88AE" w14:textId="76D13BA6" w:rsidR="00AC6E3B" w:rsidRPr="00ED57D5" w:rsidRDefault="00AC6E3B" w:rsidP="00045DC0">
       <w:pPr>
         <w:pStyle w:val="a3"/>
         <w:numPr>
           <w:ilvl w:val="0"/>
-          <w:numId w:val="2"/>
+          <w:numId w:val="5"/>
         </w:numPr>
         <w:jc w:val="both"/>
         <w:rPr>
@@ -41,12 +41,12 @@
         <w:t>Two number 9s</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="53EA40AC" w14:textId="3B5E98CC" w:rsidR="00AC6E3B" w:rsidRPr="00ED57D5" w:rsidRDefault="00AC6E3B" w:rsidP="00E36E96">
+    <w:p w14:paraId="53EA40AC" w14:textId="0828CF4A" w:rsidR="00AC6E3B" w:rsidRDefault="00AC6E3B" w:rsidP="00075C46">
       <w:pPr>
         <w:pStyle w:val="a3"/>
         <w:numPr>
           <w:ilvl w:val="1"/>
-          <w:numId w:val="3"/>
+          <w:numId w:val="6"/>
         </w:numPr>
         <w:jc w:val="both"/>
         <w:rPr>
@@ -64,12 +64,28 @@
         <w:t>A number 9 large</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="3718AFDD" w14:textId="07A786DC" w:rsidR="00AC6E3B" w:rsidRPr="00ED57D5" w:rsidRDefault="00AC6E3B" w:rsidP="007B418E">
+    <w:p w14:paraId="20A50D9F" w14:textId="73000E31" w:rsidR="00DF036F" w:rsidRPr="007C4B16" w:rsidRDefault="005E391C" w:rsidP="00C05F7F">
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Papyrus" w:hAnsi="Papyrus"/>
+          <w:lang w:val="en-US"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r w:rsidRPr="007C4B16">
+        <w:rPr>
+          <w:rFonts w:ascii="Papyrus" w:hAnsi="Papyrus"/>
+          <w:lang w:val="en-US"/>
+        </w:rPr>
+        <w:t>And a large soda</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3718AFDD" w14:textId="3C8A5F11" w:rsidR="00AC6E3B" w:rsidRPr="0062292E" w:rsidRDefault="00AC6E3B" w:rsidP="0062292E">
       <w:pPr>
         <w:pStyle w:val="a3"/>
         <w:numPr>
           <w:ilvl w:val="0"/>
-          <w:numId w:val="2"/>
+          <w:numId w:val="7"/>
         </w:numPr>
         <w:jc w:val="both"/>
         <w:rPr>
@@ -78,7 +94,7 @@
           <w:lang w:val="en-US"/>
         </w:rPr>
       </w:pPr>
-      <w:r w:rsidRPr="00ED57D5">
+      <w:r w:rsidRPr="0062292E">
         <w:rPr>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
@@ -87,8 +103,13 @@
         <w:t>A number 6 with extra dip</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="3B56D9EF" w14:textId="1FA796FF" w:rsidR="00572826" w:rsidRDefault="00572826" w:rsidP="007B418E">
+    <w:p w14:paraId="3B56D9EF" w14:textId="1FA796FF" w:rsidR="00572826" w:rsidRPr="0062292E" w:rsidRDefault="00572826" w:rsidP="0062292E">
       <w:pPr>
+        <w:pStyle w:val="a3"/>
+        <w:numPr>
+          <w:ilvl w:val="2"/>
+          <w:numId w:val="7"/>
+        </w:numPr>
         <w:jc w:val="both"/>
         <w:rPr>
           <w:sz w:val="28"/>
@@ -96,7 +117,7 @@
           <w:lang w:val="en-US"/>
         </w:rPr>
       </w:pPr>
-      <w:r>
+      <w:r w:rsidRPr="0062292E">
         <w:rPr>
           <w:sz w:val="28"/>
           <w:szCs w:val="28"/>
@@ -105,25 +126,7 @@
         <w:t>One with cheese</w:t>
       </w:r>
     </w:p>
-    <w:p w14:paraId="40ED6430" w14:textId="628FA26B" w:rsidR="00AC6E3B" w:rsidRPr="00ED57D5" w:rsidRDefault="00AC6E3B" w:rsidP="00711C3A">
-      <w:pPr>
-        <w:jc w:val="center"/>
-        <w:rPr>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-      </w:pPr>
-      <w:r w:rsidRPr="00ED57D5">
-        <w:rPr>
-          <w:sz w:val="28"/>
-          <w:szCs w:val="28"/>
-          <w:lang w:val="en-US"/>
-        </w:rPr>
-        <w:t>And a large soda</w:t>
-      </w:r>
-    </w:p>
-    <w:sectPr w:rsidR="00AC6E3B" w:rsidRPr="00ED57D5">
+    <w:sectPr w:rsidR="00572826" w:rsidRPr="0062292E">
       <w:pgSz w:w="11906" w:h="16838"/>
       <w:pgMar w:top="1134" w:right="850" w:bottom="1134" w:left="1701" w:header="708" w:footer="708" w:gutter="0"/>
       <w:cols w:space="708"/>
