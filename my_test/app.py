@@ -255,10 +255,10 @@ def print_result(paragraph_difference, text, lists, substyles=None, difference_b
     print('Checking paragraphs...')
 
     if substyles:
-        for key, value in paragraph_difference.items():
+        for key in sorted(paragraph_difference.keys()):
             print(f'\nParagraph #{key} {text[key - 1]}...')
-            print(f'\t{paragraph_diff_to_string(value[0])}'
-                  f'\n\t{font_diff_to_string(value[1], substyles, substyles_by_paragraphs[key - 1])}'
+            print(f'\t{paragraph_diff_to_string(paragraph_difference[key][0])}'
+                  f'\n\t{font_diff_to_string(paragraph_difference[key][1], substyles, substyles_by_paragraphs[key - 1])}'
                   f'\n\tSubstyles {", ".join(["SUB-" + i for i in substyles_by_paragraphs[key - 1]])} are used')  # debug
             if lists[key - 1]:
                 print(f'\t{lists[key - 1]}')
@@ -269,10 +269,10 @@ def print_result(paragraph_difference, text, lists, substyles=None, difference_b
                 print(f'\nSubstyle SUB-{substyle} is not in use in paragraph #{key + 1}') if value is False else None
 
     else:
-        for key, value in paragraph_difference.items():
+        for key in sorted(paragraph_difference.keys()):
             print(f'\nParagraph #{key} {text[key - 1]}...')
-            print(f'\t{paragraph_diff_to_string(value[0])}'
-                  f'\n\t{font_diff_to_string(value[1])}')
+            print(f'\t{paragraph_diff_to_string(paragraph_difference[key][0])}'
+                  f'\n\t{font_diff_to_string(paragraph_difference[key][1])}')
             if lists[key-1]:
                 print(f'\t{lists[key - 1]}')
 
