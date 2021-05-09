@@ -31,13 +31,12 @@ def flatten(l, ltypes=(list, tuple)):
     return ltype(l)
 
 
-def read_config():
-    config = ConfigObj('config.ini')
-    properties = dict()
-    for section in config.sections:
-        properties[section] = dict(config[section])
-
-    return properties
+# only for debugging
+def write_xml():
+    document = Document(docx_path)
+    document_xml = document.element.xml
+    file = open('sample.xml', 'w')
+    file.write(document_xml)
 
 
 def convert_docx_to_html():
@@ -50,17 +49,12 @@ def convert_docx_to_html():
     file.write(output)
 
 
-# only for debugging
-def write_xml():
-    document = Document(docx_path)
-    document_xml = document.element.xml
-    file = open('sample.xml', 'w')
-    file.write(document_xml)
-
-
 def get_data_from_html():
     PARAGRAPH = 'p'
     SPAN = 'span'
+    LIST_ELEMENT = 'li'
+    ORDERED_LIST = 'ol'
+    UNORDERED_LIST = 'ul'
 
     file = open(html_path)
     soup = BeautifulSoup(file, 'html.parser')
@@ -74,16 +68,30 @@ def get_data_from_html():
 
     paragraphs_text = [text.replace('\n', '')[:30] for text in soup.get_text().split('\n\n\n')[:-1]]
 
-    return properties, paragraphs_text
+    paragraphs_parents = [True if par.find_parent(LIST_ELEMENT) else False for par in soup.find_all(PARAGRAPH)]
+
+    return properties, paragraphs_text, paragraphs_parents
 
 
-def separate_styles_from_substyles(config):
+def read_config():
+    config = ConfigObj('config.ini')
+    properties = dict()
+    for section in config.sections:
+        properties[section] = dict(config[section])
+
+    return properties
+
+
+def parse_config(config):
     style_names = [style for style in config.keys() if 'sub-' not in style.lower()]
     substyle_names = [style for style in config.keys() if 'sub-' in style.lower()]
+
     styles = {style: config[style] for style in style_names}
     substyles = {substyle.split('SUB-', 1)[1]: config[substyle] for substyle in substyle_names}
 
-    return styles, substyles
+    lists = {style: styles[style]['LISTS'] for style in styles.keys()}
+
+    return styles, substyles, lists
 
 
 def get_paragraphs_count(style):
@@ -145,6 +153,26 @@ def compare_substyles(substyles, paragraphs_for_substyles, properties):
                                      and run_difference_by_substyle[style][i] is True]
 
     return run_difference_by_substyle, substyles_by_paragraph
+
+
+def check_lists(lists, paragraphs_for_styles, paragraphs_parents):
+    config_lists_in_paragraphs = [False for _ in range(len(paragraphs_parents))]
+    for i in range(len(config_lists_in_paragraphs)):
+        for style in lists.keys():
+            if lists[style]:
+                for par in paragraphs_for_styles[style]:
+                    config_lists_in_paragraphs[par] = True
+
+    out = []
+    for par in range(len(config_lists_in_paragraphs)):
+        if config_lists_in_paragraphs[par] == paragraphs_parents[par]:
+            out.append('paragraph is a list element (ok)')
+        elif config_lists_in_paragraphs[par] and not paragraphs_parents[par]:
+            out.append('paragraph is not a list element (ok)')
+        elif not config_lists_in_paragraphs[par] and paragraphs_parents[par]:
+            out.append('remove list from paragraph')
+
+    return out
 
 
 def paragraph_diff_to_string(difference):
@@ -211,7 +239,7 @@ def get_paragraph_difference_for_styles(difference_by_styles, paragraphs_for_sty
     return output
 
 
-def print_result(paragraph_difference, text, substyles=None, difference_by_substyles=None,
+def print_result(paragraph_difference, text, lists, substyles=None, difference_by_substyles=None,
                  paragraphs_for_substyles=None, substyles_by_paragraphs=None):
     print('Checking paragraphs...')
 
@@ -221,6 +249,7 @@ def print_result(paragraph_difference, text, substyles=None, difference_by_subst
             print(f'\t{paragraph_diff_to_string(value[0])}'
                   f'\n\t{font_diff_to_string(value[1], substyles, substyles_by_paragraphs[key - 1])}'
                   f'\n\tSubstyles {", ".join(["SUB-" + i for i in substyles_by_paragraphs[key - 1]])} are used') #debug
+            print(f'\t{lists[key - 1]}')
 
         for substyle in paragraphs_for_substyles.keys():
             font = dict(zip(paragraphs_for_substyles[substyle], difference_by_substyles[substyle].values()))
@@ -232,24 +261,29 @@ def print_result(paragraph_difference, text, substyles=None, difference_by_subst
             print(f'\nParagraph #{key} {text[key - 1]}...')
             print(f'\t{paragraph_diff_to_string(value[0])}'
                   f'\n\t{font_diff_to_string(value[1])}')
+            print(f'\t{lists[key - 1]}')
 
 
 def run():
     write_xml()
-    convert_docx_to_html()
-    properties, text = get_data_from_html()
-    config = read_config()
 
-    styles, substyles = separate_styles_from_substyles(config)
+    convert_docx_to_html()
+    properties, text, paragraphs_parents = get_data_from_html()
+
+    config = read_config()
+    styles, substyles, lists = parse_config(config)
+
     paragraphs_for_styles = get_paragraphs_for_styles(styles)
     difference_by_styles = compare_styles(styles, paragraphs_for_styles, properties)
+
+    lists_difference = check_lists(lists, paragraphs_for_styles, paragraphs_parents)
 
     if substyles:
         paragraphs_for_substyles = get_paragraphs_for_styles(substyles)
         difference_by_substyles, substyles_by_paragraphs = compare_substyles(substyles, paragraphs_for_substyles,
                                                                              properties)
         print_result(get_paragraph_difference_for_styles(difference_by_styles, paragraphs_for_styles),
-                     text, substyles, difference_by_substyles, paragraphs_for_substyles, substyles_by_paragraphs)
+                     text, lists_difference, substyles, difference_by_substyles, paragraphs_for_substyles, substyles_by_paragraphs)
     else:
         print_result(get_paragraph_difference_for_styles(difference_by_styles, paragraphs_for_styles),
-                     text)
+                     text, lists_difference)
