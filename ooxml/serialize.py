@@ -396,7 +396,7 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
       Returns as string defined CSS for this node
     """
 
-    style = []
+    style = {}
 
     if not node:
         return
@@ -409,9 +409,9 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
                 if ctx.options['scale_to_size']:
                     multiplier = size - ctx.options['scale_to_size']
                     scale = 100 + int(math.trunc(8.3 * multiplier))
-                    style.append('font-size: {}%'.format(scale))
+                    style['font-size'] = '{}%'.format(scale)
                 else:
-                    style.append('font-size: {}pt'.format(size))
+                    style['font-size'] = '{}pt'.format(size)
 
     if fontsize in [-1, 1]:
         # temporarily
@@ -420,105 +420,101 @@ def get_style_css(ctx, node, embed=True, fontsize=-1):
         # run properties
 
         if 'b' in node.run_properties:
-            style.append('bold: true')
+            style['bold'] = 'true'
 
         if 'i' in node.run_properties:
-            style.append('italic: true')
+            style['italic'] = 'true'
 
         if 'u' in node.run_properties:
-            type = node.run_properties['u']
-            style.append('underline: {}'.format(type))
+            style['underline'] = node.run_properties['u']
 
         if 'strike' in node.run_properties:
-            style.append('line-through: true')
+            style['line-through'] = 'true'
 
         if 'vertical_align' in node.run_properties:
-            style.append('vertical-align: {}'.format(node.run_properties['vertical_align']))
+            style['vertical-align'] = node.run_properties['vertical_align']
 
         if 'font_family' in node.run_properties:
-            font_family = node.run_properties['font_family']
-            style.append('font-family: {}'.format(font_family))
+            style['font-family'] = node.run_properties['font_family']
 
         if 'small_caps' in node.run_properties:
-            style.append('font-variant: small-caps')
+            style['font-variant'] = 'small-caps'
 
         if 'color' in node.run_properties:
             if node.run_properties['color'] != '000000':
-                style.append('color: #{}'.format(node.run_properties['color']))
+                style['color'] = '#' + node.run_properties['color']
 
         if 'highlight' in node.run_properties:
-            style.append('highlight: {}'.format(node.run_properties['highlight']))
+            style['highlight'] = node.run_properties['highlight']
 
         if 'shadow' in node.run_properties:
-            style.append('shadow: true')
+            style['shadow'] = 'true'
 
         if 'outline' in node.run_properties:
-            style.append('outline: true')
+            style['outline'] = 'true'
 
         if 'reflection' in node.run_properties:
-            style.append('reflection: true')
+            style['reflection'] = 'true'
 
         if 'glow' in node.run_properties:
-            style.append('glow: true')
+            style['glow'] = 'true'
 
         # paragraph_properties
 
         if 'jc' in node.paragraph_properties:
-            # left right both
             align = node.paragraph_properties['jc']
             if align.lower() == 'both':
                 align = 'justify'
-
-            style.append('text-align: {}'.format(align))
+            style['text-align'] = align
 
         if 'shd' in node.paragraph_properties:
-            style.append('background-color: {}'.format(node.paragraph_properties['shd']))
+            style['background-color'] = node.paragraph_properties['shd']
 
         if 'spacing' in node.paragraph_properties:
             if 'line' in node.paragraph_properties['spacing']:
                 spacing = int(node.paragraph_properties['spacing']['line']) / 240
-                style.append('line-spacing: {}'.format(spacing))
+                style['line-spacing'] = spacing
 
             if 'before' in node.paragraph_properties['spacing']:
                 spacing = int(node.paragraph_properties['spacing']['before']) / 20
-                style.append('before-spacing: {}'.format(spacing))
+                style['before-spacing'] = spacing
 
             if 'after' in node.paragraph_properties['spacing']:
                 spacing = int(node.paragraph_properties['spacing']['after']) / 20
-                style.append('after-spacing: {}'.format(spacing))
+                style['after-spacing'] = spacing
 
         if 'ind' in node.paragraph_properties:
             if 'left' in node.paragraph_properties['ind']:
                 size = int(node.paragraph_properties['ind']['left']) / 567
-                style.append('margin-left: {:.2f}cm'.format(size))
+                style['margin-left'] = '{:.2f}cm'.format(size)
 
             if 'right' in node.paragraph_properties['ind']:
                 size = int(node.paragraph_properties['ind']['right']) / 567
-                style.append('margin-right: {:.2f}cm'.format(size))
+                style['margin-right'] = '{:.2f}cm'.format(size)
 
             if 'first_line' in node.paragraph_properties['ind']:
                 size = int(node.paragraph_properties['ind']['first_line']) / 567
-                style.append('first-line: {:.2f}cm'.format(size))
+                style['first-line'] = '{:.2f}cm'.format(size)
 
         # section properties
 
         if 'page_height' in node.section_properties:
-            style.append('page-height: {:.0f}mm'.format(int(node.section_properties['page_height']) * 0.017638889))
+            style['page-height'] = '{:.0f}mm'.format(int(node.section_properties['page_height']) * 0.017638889)
 
         if 'page_width' in node.section_properties:
-            style.append('page-width: {:.0f}mm'.format(int(node.section_properties['page_width']) * 0.017638889))
+            style['page-width'] = '{:.0f}mm'.format(int(node.section_properties['page_height']) * 0.017638889)
 
         if 'orientation' in node.section_properties:
-            style.append('orientation: {}'.format(node.section_properties['orientation']))
+            style['orientation'] = node.section_properties['orientation']
 
         if 'page_margins' in node.section_properties:
             margins_in_mm = [int(margin) * 0.017638889 for margin in node.section_properties['page_margins']]
-            style.append('page-margins: {:.0f} {:.0f} {:.0f} {:.0f}'.format(*margins_in_mm))
+            style['page-margins'] = '{:.0f} {:.0f} {:.0f} {:.0f}'.format(*margins_in_mm)
 
     if len(style) == 0:
         return ''
 
-    return '; '.join(style) + ';'
+    return '; '.join('{}: {}'.format(k, v) for k, v in style.items()) + ';'
 
 
 def get_style(document, elem):
@@ -621,7 +617,7 @@ def serialize_paragraph(ctx, document, par, root, embed=True):
 
     else:
         _style = ''
-
+    debug=0
     if style:
         elem.set('class', get_css_classes(document, style))
 
